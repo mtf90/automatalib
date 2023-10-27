@@ -708,7 +708,7 @@ limitations under the License.
                     <artifactId>maven-release-plugin</artifactId>
                     <version>${release-plugin.version}</version>
                     <configuration>
-                        <preparationProfiles>code-analysis</preparationProfiles>
+                        <!--preparationProfiles>code-analysis</preparationProfiles-->
                         <!-- Perform an install into the local repository, otherwise the javadoc plugin and archetype integration tests will fail -->
                         <preparationGoals>clean install site</preparationGoals>
                         <releaseProfiles>release,sign-artifacts,bundles,!examples</releaseProfiles>
