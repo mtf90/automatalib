@@ -37,6 +37,11 @@ open module net.automatalib.util {
     // annotations are 'provided'-scoped and do not need to be loaded at runtime
     requires static de.learnlib.tooling.annotation;
     requires static org.checkerframework.checker.qual;
+    requires jconstraints.core;
+    requires java.logging;
+    requires org.slf4j;
+    requires jStateExplorer;
+    requires com.google.common;
 
     exports net.automatalib.util.automaton;
     exports net.automatalib.util.automaton.ads;
@@ -45,6 +50,7 @@ open module net.automatalib.util {
     exports net.automatalib.util.automaton.copy;
     exports net.automatalib.util.automaton.cover;
     exports net.automatalib.util.automaton.equivalence;
+    exports net.automatalib.util.automaton.equivalence.jse;
     exports net.automatalib.util.automaton.fsa;
     exports net.automatalib.util.automaton.minimizer;
     exports net.automatalib.util.automaton.predicate;

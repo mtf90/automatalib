@@ -50,6 +50,10 @@ limitations under the License.
             <groupId>net.automatalib</groupId>
             <artifactId>automata-commons-util</artifactId>
         </dependency>
+        <dependency>
+            <groupId>tools.aqua</groupId>
+            <artifactId>jconstraints-core</artifactId>
+        </dependency>
 
         <!-- external -->
         <dependency>

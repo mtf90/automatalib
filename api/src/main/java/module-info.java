@@ -39,6 +39,7 @@ open module net.automatalib.api {
 
     // annotations are 'provided'-scoped and do not need to be loaded at runtime
     requires static org.checkerframework.checker.qual;
+    requires jconstraints.core;
 
     exports net.automatalib.alphabet;
     exports net.automatalib.automaton;
@@ -49,11 +50,13 @@ open module net.automatalib.api {
     exports net.automatalib.automaton.helper;
     exports net.automatalib.automaton.mmlt;
     exports net.automatalib.automaton.procedural;
+    exports net.automatalib.automaton.ra;
     exports net.automatalib.automaton.simple;
     exports net.automatalib.automaton.transducer;
     exports net.automatalib.automaton.transducer.probabilistic;
     exports net.automatalib.automaton.visualization;
     exports net.automatalib.automaton.vpa;
+    exports net.automatalib.data;
     exports net.automatalib.exception;
     exports net.automatalib.graph;
     exports net.automatalib.graph.ads;
@@ -63,6 +66,7 @@ open module net.automatalib.api {
     exports net.automatalib.modelchecking;
     exports net.automatalib.semantic;
     exports net.automatalib.serialization;
+    exports net.automatalib.symbol.data;
     exports net.automatalib.symbol.time;
     exports net.automatalib.ts;
     exports net.automatalib.ts.acceptor;

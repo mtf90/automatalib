@@ -53,6 +53,13 @@ limitations under the License.
             <artifactId>automata-core</artifactId>
         </dependency>
 
+        <!-- external -->
+        <dependency>
+            <groupId>gov.nasa</groupId>
+            <artifactId>jStateExplorer</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
         <!-- build -->
         <dependency>
             <groupId>de.learnlib.tooling</groupId>
@@ -72,6 +79,10 @@ limitations under the License.
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>tools.aqua</groupId>
+            <artifactId>jconstraints-z3</artifactId>
         </dependency>
     </dependencies>
 </project>
