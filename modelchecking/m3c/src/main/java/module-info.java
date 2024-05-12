@@ -44,6 +44,7 @@ open module net.automatalib.modelchecker.m3c {
 
     // make non-static once https://github.com/typetools/checker-framework/issues/4559 is implemented
     requires static org.checkerframework.checker.qual;
+    requires gear.core;
 
     exports net.automatalib.modelchecker.m3c.formula;
     exports net.automatalib.modelchecker.m3c.formula.ctl;

@@ -199,6 +199,30 @@ abstract class AbstractDDSolver<T extends AbstractPropertyTransformer<T, L, AP>,
         }
     }
 
+    public @Nullable List<?> findGEARCounterExample(ContextFreeModalProcessSystem<L, AP> cfmps,
+                                                    Collection<? extends L> inputs,
+                                                    FormulaNode<L, AP> formulaNode) {
+        final NotNode<L, AP> negatedFormula = new NotNode<>(formulaNode);
+        final FormulaNode<L, AP> ast = ctlToMuCalc(negatedFormula).toNNF();
+
+        initialize(ast);
+
+        try {
+            this.solveInternal(false, Collections.emptyList());
+
+            final boolean sat = isSat();
+
+            if (sat) {
+                final Map<L, AbstractDDSolver<?, L, AP>.WorkUnit<?, ?>> units = Collections.unmodifiableMap(workUnits);
+                GEARMC<L, AP> mc = new GEARMC<>(cfmps, units, dependencyGraph, getAllAPDeadlockedNode());
+                return mc.findCounterexample(dependencyGraph.getAST());
+            }
+            return null;
+        } finally {
+            shutdownDDManager();
+        }
+    }
+
     public boolean solve(FormulaNode<L, AP> formula) {
         final FormulaNode<L, AP> ast = ctlToMuCalc(formula).toNNF();
 
@@ -612,6 +636,12 @@ abstract class AbstractDDSolver<T extends AbstractPropertyTransformer<T, L, AP>,
             this.pmpg = pmpg;
             this.predecessors = predecessors;
         }
+
+        T getInitialTransformer() {
+            return propTransformers.get(pmpg.getInitialNode());
+        }
+
+
     }
 
 }

@@ -33,4 +33,5 @@ open module net.automatalib.example {
     requires static automaton;
     // make non-static once https://github.com/typetools/checker-framework/issues/4559 is implemented
     requires static org.checkerframework.checker.qual;
+    requires gear.core;
 }
