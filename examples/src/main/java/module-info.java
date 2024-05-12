@@ -35,4 +35,5 @@ open module net.automatalib.example {
     requires static automaton;
     // annotations are 'provided'-scoped and do not need to be loaded at runtime
     requires static org.checkerframework.checker.qual;
+    requires gear.core;
 }

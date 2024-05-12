@@ -44,6 +44,7 @@ open module net.automatalib.modelchecker.m3c {
 
     // annotations are 'provided'-scoped and do not need to be loaded at runtime
     requires static org.checkerframework.checker.qual;
+    requires gear.core;
 
     exports net.automatalib.modelchecker.m3c.formula;
     exports net.automatalib.modelchecker.m3c.formula.ctl;
