@@ -202,8 +202,7 @@ abstract class AbstractDDSolver<T extends AbstractPropertyTransformer<T, L, AP>,
     public @Nullable List<?> findGEARCounterExample(ContextFreeModalProcessSystem<L, AP> cfmps,
                                                     Collection<? extends L> inputs,
                                                     FormulaNode<L, AP> formulaNode) {
-        final NotNode<L, AP> negatedFormula = new NotNode<>(formulaNode);
-        final FormulaNode<L, AP> ast = ctlToMuCalc(negatedFormula).toNNF();
+        final FormulaNode<L, AP> ast = ctlToMuCalc(formulaNode).toNNF();
 
         initialize(ast);
 
@@ -212,7 +211,7 @@ abstract class AbstractDDSolver<T extends AbstractPropertyTransformer<T, L, AP>,
 
             final boolean sat = isSat();
 
-            if (sat) {
+            if (!sat) {
                 final Map<L, AbstractDDSolver<?, L, AP>.WorkUnit<?, ?>> units = Collections.unmodifiableMap(workUnits);
                 GEARMC<L, AP> mc = new GEARMC<>(cfmps, units, dependencyGraph, getAllAPDeadlockedNode());
                 return mc.findCounterexample(dependencyGraph.getAST());

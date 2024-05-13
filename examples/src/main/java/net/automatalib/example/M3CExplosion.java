@@ -31,7 +31,7 @@ public class M3CExplosion {
         final DefaultProceduralInputAlphabet<Character> alphabet =
                 new DefaultProceduralInputAlphabet<>(internalAlphabet, callAlphabet, 'R');
 
-        final int formulaLength = 5;
+        final int formulaLength = 2;
 
         final FormulaNode<Character, Void> formula = createFormula(formulaLength);
         final SBA<?, Character> sba = createSBA(alphabet);

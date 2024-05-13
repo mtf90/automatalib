@@ -17,7 +17,10 @@ import de.metaframe.gear.game.GameGraphNode.Type;
 import de.metaframe.gear.model.Edge;
 import de.metaframe.gear.model.Model;
 import de.metaframe.gear.sexp.SymbolicExpression;
+import net.automatalib.common.util.Pair;
+import net.automatalib.graph.Graph;
 import net.automatalib.graph.ProceduralModalProcessGraph;
+import net.automatalib.graph.concept.GraphViewable;
 import net.automatalib.modelchecker.m3c.formula.AbstractBinaryFormulaNode;
 import net.automatalib.modelchecker.m3c.formula.AbstractModalFormulaNode;
 import net.automatalib.modelchecker.m3c.formula.AbstractUnaryFormulaNode;
@@ -32,7 +35,7 @@ import net.automatalib.modelchecker.m3c.formula.modalmu.LfpNode;
 import net.automatalib.modelchecker.m3c.formula.modalmu.VariableNode;
 import net.automatalib.ts.modal.transition.ProceduralModalEdgeProperty;
 
-public class G4m3Graph<N, L, E, AP> extends GameGraph<N, E> {
+public class G4m3Graph<N, L, E, AP> extends GameGraph<N, E> implements GraphViewable {
 
     private final ProceduralModalProcessGraph<N, L, E, AP, ?> model;
 
@@ -64,8 +67,9 @@ public class G4m3Graph<N, L, E, AP> extends GameGraph<N, E> {
         this.context = context;
         this.root = formulaNode;
 
-        Collection<FormulaNode<L, AP>> subformulas = new ArrayList<>(dg.getFormulaNodes()); //subformulas(formulaNode);
-        subformulas.add(this.root);
+//        Collection<FormulaNode<L, AP>> subformulas = new ArrayList<>(dg.getFormulaNodes());
+//        subformulas.add(this.root);
+        Collection<FormulaNode<L, AP>> subformulas = subformulas(formulaNode);
 
         for (FormulaNode<L, AP> formula : subformulas) {
             if (formula instanceof AbstractFixedPointFormulaNode) {
@@ -78,7 +82,7 @@ public class G4m3Graph<N, L, E, AP> extends GameGraph<N, E> {
         for (N n : model) {
             final Map<FormulaNode<L, AP>, GameGraphNode<N>> map = new HashMap<>();
             for (FormulaNode<L, AP> f : subformulas) {
-                GameGraphNode<N> ggnode = new GameGraphNode<>(new SymbolicExpression(f.toString()), n, 0, getType(n, f));
+                GameGraphNode<N> ggnode = new GameGraphNode<>(new SymbolicExpression(f.toString()), n, 1, getType(n, f));
                 map.put(f, ggnode);
                 this.succs.put(ggnode, new HashSet<>());
             }
@@ -97,8 +101,7 @@ public class G4m3Graph<N, L, E, AP> extends GameGraph<N, E> {
                 if (exp instanceof AbstractFixedPointFormulaNode) {
                     // mapping (MIN/MAX X PHI) to subformula PHI
                     AbstractFixedPointFormulaNode<L, AP> f = (AbstractFixedPointFormulaNode<L, AP>) exp;
-                    FormulaNode<L, AP> subFormula = this.fixvar2fix.get(f.getVariable());
-                    this.succs.get(ggn).add(map.get(subFormula));
+                    this.succs.get(ggn).add(map.get(f.getChild()));
                 } else if (exp instanceof AbstractBinaryFormulaNode) {
                     // mapping AND/OR to subformulas at same node
                     AbstractBinaryFormulaNode<L, AP> f = (AbstractBinaryFormulaNode<L, AP>) exp;
@@ -141,6 +144,9 @@ public class G4m3Graph<N, L, E, AP> extends GameGraph<N, E> {
                                     if (succ == null) {
                                         throw new NullPointerException();
                                     }
+//                                    if (succ == ggn) {
+//                                        continue;
+//                                    }
                                     this.succs.get(ggn).add(succ);
                                 }
                             }
@@ -327,6 +333,74 @@ public class G4m3Graph<N, L, E, AP> extends GameGraph<N, E> {
     @Override
     public void removeEdge(GameGraphNode<N> src, GameGraphNode<N> tgt) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Graph<?, ?> graphView() {
+        return new AsGraph();
+    }
+
+    private class AsGraph implements Graph<GNode<N>, GNode<N>> {
+
+
+        private final Map<GameGraphNode<N>, GNode<N>> nodes;
+        private final Map<GNode<N>, Set<GNode<N>>> adjacency;
+
+        public AsGraph() {
+
+            this.nodes = new HashMap<>();
+            this.adjacency = new HashMap<>();
+
+            for (Entry<N, Map<FormulaNode<L, AP>, GameGraphNode<N>>> e : ggnodecache.entrySet()) {
+                for (Entry<FormulaNode<L, AP>, GameGraphNode<N>> e2 : e.getValue().entrySet()) {
+                    FormulaNode<L, AP> formula = e2.getKey();
+                    GameGraphNode<N> node = e2.getValue();
+                    this.nodes.put(node, new GNode<>(node.getModelNode(), node, formula));
+                }
+            }
+
+            for (GNode<N> node : this.nodes.values()) {
+                final Set<GNode<N>> set = new HashSet<>();
+                for (GameGraphNode<N> ggn : succs.get(node.ggnode)) {
+                    set.add(this.nodes.get(ggn));
+                }
+                this.adjacency.put(node, set);
+            }
+
+        }
+
+        @Override
+        public Collection<GNode<N>> getOutgoingEdges(GNode<N> node) {
+            return this.adjacency.get(node);
+        }
+
+        @Override
+        public GNode<N> getTarget(GNode<N> edge) {
+            return edge;
+        }
+
+        @Override
+        public Collection<GNode<N>> getNodes() {
+            return this.nodes.values();
+        }
+    }
+
+    private class GNode<N> {
+
+        private final N src;
+        private final GameGraphNode<N> ggnode;
+        private final FormulaNode<L, AP> formula;
+
+        private GNode(N src, GameGraphNode<N> ggnode, FormulaNode<L, AP> formula) {
+            this.src = src;
+            this.ggnode = ggnode;
+            this.formula = formula;
+        }
+
+        @Override
+        public String toString() {
+            return src + ": " + formula + '\n' + ggnode.getType();
+        }
     }
 }
 

@@ -70,8 +70,20 @@ class CFMPSViewSBA<I> implements ContextFreeModalProcessSystem<I, Void> {
     private static class MPGView<S, I>
             implements ProceduralModalProcessGraph<S, I, PMPGEdge<I, S>, Void, ProceduralModalEdgeProperty> {
 
-        private static final Object INITIAL = new Object();
-        private static final Object FINAL = new Object();
+        private static final Object INITIAL = new Object() {
+
+            @Override
+            public String toString() {
+                return "init";
+            }
+        };
+        private static final Object FINAL = new Object() {
+
+            @Override
+            public String toString() {
+                return "end";
+            }
+        };
 
         private final ProceduralInputAlphabet<I> alphabet;
         private final I procedure;
