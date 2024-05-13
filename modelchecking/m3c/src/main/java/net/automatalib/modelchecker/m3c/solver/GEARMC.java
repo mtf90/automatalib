@@ -1,9 +1,12 @@
 package net.automatalib.modelchecker.m3c.solver;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 import de.metaframe.gear.game.GameGraph;
 import de.metaframe.gear.game.GameGraphNode;
@@ -12,6 +15,7 @@ import de.metaframe.gear.game.strategies.WinningStrategies;
 import net.automatalib.graph.ContextFreeModalProcessSystem;
 import net.automatalib.modelchecker.m3c.formula.DependencyGraph;
 import net.automatalib.modelchecker.m3c.formula.FormulaNode;
+import net.automatalib.visualization.Visualization;
 
 public class GEARMC<L, AP> {
 
@@ -44,7 +48,11 @@ public class GEARMC<L, AP> {
         G4m3Graph<N, L, E, AP> graph = new G4m3Graph<>(unit.pmpg, formula, dg, unit, this.units, this.initialContext);
         WinningStrategies<N, E> winningStrategies = new WinningStrategies<>(graph);
 
-        return findErrorPath(graph, winningStrategies, graph.getInitialNodes().iterator().next().getModelNode());
+        List<N> result = findErrorPath(graph, winningStrategies, graph.getInitialNodes().iterator().next().getModelNode());
+
+//        Visualization.visualize(graph);
+
+        return result;
     }
 
     public static <N, E> List<N> findErrorPath(GameGraph<N, E> gamegraph,
@@ -94,6 +102,10 @@ public class GEARMC<L, AP> {
             }
         }
 
+        System.out.println();
+        System.out.println(ggNodes.stream().map(Object::toString).collect(Collectors.joining("\n")));
+        System.out.println();
+        System.out.println(result);
         return result;
     }
 }
