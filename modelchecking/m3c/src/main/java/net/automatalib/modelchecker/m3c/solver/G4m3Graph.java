@@ -31,6 +31,7 @@ import net.automatalib.modelchecker.m3c.formula.FalseNode;
 import net.automatalib.modelchecker.m3c.formula.FormulaNode;
 import net.automatalib.modelchecker.m3c.formula.OrNode;
 import net.automatalib.modelchecker.m3c.formula.modalmu.AbstractFixedPointFormulaNode;
+import net.automatalib.modelchecker.m3c.formula.modalmu.GfpNode;
 import net.automatalib.modelchecker.m3c.formula.modalmu.LfpNode;
 import net.automatalib.modelchecker.m3c.formula.modalmu.VariableNode;
 import net.automatalib.ts.modal.transition.ProceduralModalEdgeProperty;
@@ -50,9 +51,12 @@ public class G4m3Graph<N, L, E, AP> extends GameGraph<N, E> implements GraphView
 
     // forward- and back-edges
     private final Map<GameGraphNode<N>, Set<GameGraphNode<N>>> succs = new HashMap<>();
+    private final Map<GameGraphNode<N>, Set<GameGraphNode<N>>> preds = new HashMap<>();
 
     // mapping from atomic fix point variable expressions to fix point expression they are bound to
     private final Map<String, FormulaNode<L, AP>> fixvar2fix = new HashMap<>();
+    private Map<FormulaNode<L, AP>, Integer> exp2prio = new HashMap<>();
+    private Map<Pair<GameGraphNode<N>, GameGraphNode<N>>, L> labels = new HashMap<>();
 
     G4m3Graph(ProceduralModalProcessGraph<N, L, E, AP, ?> model,
               FormulaNode<L, AP> formulaNode,
@@ -66,6 +70,8 @@ public class G4m3Graph<N, L, E, AP> extends GameGraph<N, E> implements GraphView
         this.units = units;
         this.context = context;
         this.root = formulaNode;
+
+        this.exp2prio = computeExpression2Prio(formulaNode);
 
 //        Collection<FormulaNode<L, AP>> subformulas = new ArrayList<>(dg.getFormulaNodes());
 //        subformulas.add(this.root);
@@ -82,9 +88,10 @@ public class G4m3Graph<N, L, E, AP> extends GameGraph<N, E> implements GraphView
         for (N n : model) {
             final Map<FormulaNode<L, AP>, GameGraphNode<N>> map = new HashMap<>();
             for (FormulaNode<L, AP> f : subformulas) {
-                GameGraphNode<N> ggnode = new GameGraphNode<>(new SymbolicExpression(f.toString()), n, 1, getType(n, f));
+                GameGraphNode<N> ggnode = new GameGraphNode<>(new SymbolicExpression(f.toString()), n, this.exp2prio.get(f), getType(n, f));
                 map.put(f, ggnode);
                 this.succs.put(ggnode, new HashSet<>());
+                this.preds.put(ggnode, new HashSet<>());
             }
             ggnodecache.put(n, map);
         }
@@ -101,14 +108,15 @@ public class G4m3Graph<N, L, E, AP> extends GameGraph<N, E> implements GraphView
                 if (exp instanceof AbstractFixedPointFormulaNode) {
                     // mapping (MIN/MAX X PHI) to subformula PHI
                     AbstractFixedPointFormulaNode<L, AP> f = (AbstractFixedPointFormulaNode<L, AP>) exp;
-                    this.succs.get(ggn).add(map.get(f.getChild()));
+                    GameGraphNode<N> ggn_succ = map.get(f.getChild());
+                    configureEdge(ggn, ggn_succ);
                 } else if (exp instanceof AbstractBinaryFormulaNode) {
                     // mapping AND/OR to subformulas at same node
                     AbstractBinaryFormulaNode<L, AP> f = (AbstractBinaryFormulaNode<L, AP>) exp;
-                    FormulaNode<L, AP> right = f.getRightChild();
-                    FormulaNode<L, AP> left = f.getLeftChild();
-                    this.succs.get(ggn).add(map.get(right));
-                    this.succs.get(ggn).add(map.get(left));
+                    GameGraphNode<N> succl = map.get(f.getLeftChild());
+                    GameGraphNode<N> succr = map.get(f.getRightChild());
+                    configureEdge(ggn, succl);
+                    configureEdge(ggn, succr);
                 } else if (exp instanceof AbstractModalFormulaNode) {
                     // mapping BOX(B)/DIA(B) to successing(predecessing) nodes at subexpression
                     AbstractModalFormulaNode<L, AP> f = (AbstractModalFormulaNode<L, AP>) exp;
@@ -131,7 +139,7 @@ public class G4m3Graph<N, L, E, AP> extends GameGraph<N, E> implements GraphView
                             // mapping to the only operand and target of edge
                             if (f.getAction() == null || f.getAction().equals(label)) {
                                 GameGraphNode<N> succ = this.ggnodecache.get(tgt).get(f.getChild());
-                                this.succs.get(ggn).add(succ);
+                                configureEdge(ggn, succ, label);
                             }
                         } else {
                             // for all teilformeln die dadurch erfüllt werden.
@@ -141,20 +149,15 @@ public class G4m3Graph<N, L, E, AP> extends GameGraph<N, E> implements GraphView
                             for (FormulaNode<L, AP> subformula : subformulas) {
                                 if (callContext.get(subformula.getVarNumber())) {
                                     GameGraphNode<N> succ = this.ggnodecache.get(tgt).get(subformula);
-                                    if (succ == null) {
-                                        throw new NullPointerException();
-                                    }
-//                                    if (succ == ggn) {
-//                                        continue;
-//                                    }
-                                    this.succs.get(ggn).add(succ);
+                                    configureEdge(ggn, succ, label);
                                 }
                             }
                         }
                     }
                 } else if (exp instanceof VariableNode) {
                     VariableNode<L, AP> f = (VariableNode<L, AP>) exp;
-                    this.succs.get(ggn).add(map.get(this.fixvar2fix.get(f.getVariable())));
+                    GameGraphNode<N> succ = map.get(this.fixvar2fix.get(f.getVariable()));
+                    configureEdge(ggn, succ);
                 }
             }
         }
@@ -165,6 +168,27 @@ public class G4m3Graph<N, L, E, AP> extends GameGraph<N, E> implements GraphView
         final List<FormulaNode<L, AP>> cache = new ArrayList<>();
         subformulas(root, cache);
         return cache;
+    }
+
+    private void configureEdge(GameGraphNode<N> src, GameGraphNode<N> tgt) {
+        configureEdge(src, tgt, null);
+    }
+
+    private void configureEdge(GameGraphNode<N> src, GameGraphNode<N> tgt, L label) {
+        this.succs.get(src).add(tgt);
+        this.preds.get(tgt).add(src);
+        if (label != null) {
+            this.labels.put(Pair.of(src, tgt), label);
+        }
+    }
+
+    public String getLabelBetween(GameGraphNode<N> src, GameGraphNode<N> tgt) {
+        L label = this.labels.get(Pair.of(src, tgt));
+        if (label != null) {
+            return label.toString();
+        }
+
+        return null;
     }
 
     private void subformulas(FormulaNode<L, AP> root, List<FormulaNode<L, AP>> cache) {
@@ -209,6 +233,75 @@ public class G4m3Graph<N, L, E, AP> extends GameGraph<N, E> implements GraphView
         return Type.CONJUNCTIVE;
     }
 
+    /**
+     * Compute a mapping that maps each expression to its priority.
+     */
+    public Map<FormulaNode<L, AP>, Integer> computeExpression2Prio(FormulaNode<L, AP> expression) {
+        HashMap<FormulaNode<L, AP>, Integer> exp2prio = new HashMap<>();
+
+        // lets fill the map
+        computeExpression2Prio(expression, exp2prio, 0);
+
+        return exp2prio;
+    }
+
+    private void computeExpression2Prio(FormulaNode<L, AP> exp, Map<FormulaNode<L, AP>, Integer> exp2prio, int prio) {
+        /*
+         * Greatest fixpoint is initialized with 0, increased upon change
+         * Least fixpoint is initialized with 1, increased upon change
+         * So greatest fixpoint alsway have EVEN, least fixpoints have ODD priorities.
+         */
+
+        if(exp instanceof AbstractUnaryFormulaNode || exp instanceof AbstractBinaryFormulaNode) {
+            int prioNew;
+
+            if(exp instanceof GfpNode && prio == 0)
+                // no fixpoint seen so far, so lets init with 0
+                prioNew = 0;
+
+            else if(exp instanceof LfpNode && prio == 0)
+                // no fixpoint seen so far, so lets init with 1
+                prioNew = 1;
+
+            else if(exp instanceof GfpNode && prio % 2 != 0)
+                // prio is odd at max => prio change
+                prioNew = prio + 1;
+
+            else if(exp instanceof LfpNode && prio % 2 == 0)
+                // prio is even at in => prio change
+                prioNew = prio + 1;
+
+            else
+                prioNew = prio;
+
+            // adding prio for current expression
+            exp2prio.put(exp, prioNew);
+
+            // recurse on operands
+            if (exp instanceof AbstractUnaryFormulaNode) {
+                AbstractUnaryFormulaNode<L, AP> f = (AbstractUnaryFormulaNode<L, AP>) exp;
+                computeExpression2Prio(f.getChild(), exp2prio, prioNew);
+            } else {
+                AbstractBinaryFormulaNode<L, AP> f = (AbstractBinaryFormulaNode<L, AP>) exp;
+                computeExpression2Prio(f.getLeftChild(), exp2prio, prioNew);
+                computeExpression2Prio(f.getRightChild(), exp2prio, prioNew);
+            }
+
+            //  adding prio for bound fixpoint variable and overwriting prio found in recursion
+            if(exp instanceof GfpNode) {
+                GfpNode<L, AP> f = (GfpNode<L, AP>) exp;
+                exp2prio.put(f.getChild(), prioNew);
+            } else if (exp instanceof LfpNode) {
+                LfpNode<L, AP> f = (LfpNode<L, AP>) exp;
+                exp2prio.put(f.getChild(), prioNew);
+            }
+
+        } else {
+            // expression is atomic - proposition or fix point variable
+            exp2prio.put(exp, prio);
+        }
+    }
+
     @Override
     public GameGraphNode<N> getGameGraphNode(N modelNode, SymbolicExpression exp) {
         throw new UnsupportedOperationException();
@@ -221,7 +314,7 @@ public class G4m3Graph<N, L, E, AP> extends GameGraph<N, E> implements GraphView
 
     @Override
     public Set<GameGraphNode<N>> getPreds(GameGraphNode<N> node) {
-        return Collections.emptySet();
+        return this.preds.get(node);
     }
 
     @Override
