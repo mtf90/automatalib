@@ -1,21 +1,17 @@
 package net.automatalib.modelchecker.m3c.solver;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
-import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import de.metaframe.gear.game.GameGraph;
 import de.metaframe.gear.game.GameGraphNode;
 import de.metaframe.gear.game.strategies.Strategy;
 import de.metaframe.gear.game.strategies.WinningStrategies;
 import net.automatalib.graph.ContextFreeModalProcessSystem;
 import net.automatalib.modelchecker.m3c.formula.DependencyGraph;
 import net.automatalib.modelchecker.m3c.formula.FormulaNode;
-import net.automatalib.visualization.Visualization;
 
 public class GEARMC<L, AP> {
 
@@ -55,9 +51,11 @@ public class GEARMC<L, AP> {
         return result;
     }
 
-    public static <N, E> List<N> findErrorPath(GameGraph<N, E> gamegraph,
+    public static <N, L, E, AP> List<N> findErrorPath(G4m3Graph<N, L, E, AP> gamegraph,
                                                WinningStrategies<N, E> winningStrategies,
                                                N modelnode) {
+
+        List<String> path = new ArrayList<>();
 
         if (winningStrategies == null) {
             throw new IllegalStateException("There is no strategy present. You need to perform model checking first.");
@@ -96,6 +94,13 @@ public class GEARMC<L, AP> {
                 result.add(ggNode.getModelNode());
             }
 
+            if (ggNodes.size() > 1) {
+                String label = gamegraph.getLabelBetween(ggNodes.get(ggNodes.size() - 2), ggNode);
+                if (label != null) {
+                    path.add(label);
+                }
+            }
+
             if (c++ > 10000) {
                 System.err.println("Cycling too long through strategies");
                 break;
@@ -105,7 +110,7 @@ public class GEARMC<L, AP> {
         System.out.println();
         System.out.println(ggNodes.stream().map(Object::toString).collect(Collectors.joining("\n")));
         System.out.println();
-        System.out.println(result);
+        System.out.println(path);
         return result;
     }
 }
