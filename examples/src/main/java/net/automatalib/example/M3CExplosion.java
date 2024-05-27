@@ -12,14 +12,16 @@ import net.automatalib.automaton.procedural.SBA;
 import net.automatalib.automaton.procedural.impl.StackSBA;
 import net.automatalib.exception.FormatException;
 import net.automatalib.graph.ContextFreeModalProcessSystem;
+import net.automatalib.graph.impl.CompactPMPG;
+import net.automatalib.graph.impl.DefaultCFMPS;
 import net.automatalib.modelchecker.m3c.formula.FormulaNode;
-import net.automatalib.modelchecker.m3c.formula.NotNode;
 import net.automatalib.modelchecker.m3c.formula.parser.M3CParser;
 import net.automatalib.modelchecker.m3c.solver.BDDSolver;
-import net.automatalib.modelchecker.m3c.solver.WitnessTree;
+import net.automatalib.ts.modal.transition.ModalEdgeProperty.ModalType;
+import net.automatalib.ts.modal.transition.ProceduralModalEdgeProperty.ProceduralType;
+import net.automatalib.ts.modal.transition.impl.ProceduralModalEdgePropertyImpl;
 import net.automatalib.util.automaton.fsa.MutableDFAs;
 import net.automatalib.util.automaton.procedural.SBAs;
-import net.automatalib.visualization.Visualization;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class M3CExplosion {
@@ -35,28 +37,29 @@ public class M3CExplosion {
 
         final FormulaNode<Character, Void> formula = createFormula(formulaLength);
         final SBA<?, Character> sba = createSBA(alphabet);
-        final ContextFreeModalProcessSystem<Character, Void> cfmps = SBAs.toCFMPS(sba);
+//        final ContextFreeModalProcessSystem<Character, Void> cfmps = SBAs.toCFMPS(sba);
+        final ContextFreeModalProcessSystem<Character, Void> cfmps = createCFMPS();
         final BDDSolver<Character, Void> solver = new BDDSolver<>(cfmps);
 
         System.out.println(formula);
-//        Visualization.visualize(cfmps);
+        //        Visualization.visualize(cfmps);
 
         long before, after;
 
         // BOOM
-//        before = System.currentTimeMillis();
-//        WitnessTree<Character, Void> ce = solver.findCounterExample(cfmps, alphabet, formula);
-//        after = System.currentTimeMillis();
-//
-//        System.out.println("Duration: " + (after - before) / 1000f);
-//
-//        if (ce != null) {
-//            System.out.println(ce.size());
-//            System.out.println(ce.getWitness());
-//        }
+        //        before = System.currentTimeMillis();
+        //        WitnessTree<Character, Void> ce = solver.findCounterExample(cfmps, alphabet, formula);
+        //        after = System.currentTimeMillis();
+        //
+        //        System.out.println("Duration: " + (after - before) / 1000f);
+        //
+        //        if (ce != null) {
+        //            System.out.println(ce.size());
+        //            System.out.println(ce.getWitness());
+        //        }
 
         before = System.currentTimeMillis();
-        List<?> gearCE = solver.findGEARCounterExample(cfmps, alphabet, formula);
+        List<?> gearCE = solver.findGEARWitness(cfmps, alphabet, formula);
         after = System.currentTimeMillis();
 
         System.out.println("Duration: " + (after - before) / 1000f);
@@ -71,14 +74,14 @@ public class M3CExplosion {
         final StringBuilder sb = new StringBuilder();
 
         sb.append("EF");
-        sb.append("<P>");
+        sb.append("<P><P>");
         for (int i = 0; i < length; i++) {
             sb.append("<R>");
         }
         sb.append("true");
 
         // use negated formula because witness <-> counterexample to negation
-        return new NotNode<>(M3CParser.parse(sb.toString(), l -> l.charAt(0), ap -> null));
+        return M3CParser.parse(sb.toString(), l -> l.charAt(0), ap -> null);
     }
 
     private static @NonNull SBA<?, Character> createSBA(ProceduralInputAlphabet<Character> alphabet) {
@@ -97,6 +100,46 @@ public class M3CExplosion {
         MutableDFAs.complete(dfa, alphabet);
 
         return new StackSBA<>(alphabet, 'P', Collections.singletonMap('P', dfa));
+    }
+
+    private static ContextFreeModalProcessSystem<Character, Void> createCFMPS() {
+
+        final CompactPMPG<Character, Void> pmpg = new CompactPMPG<>('-');
+
+        Integer init = pmpg.addNode();
+        Integer n0 = pmpg.addNode();
+        Integer end = pmpg.addNode();
+
+        pmpg.setEdgeLabel(pmpg.connect(init,
+                                       n0,
+                                       new ProceduralModalEdgePropertyImpl(ProceduralType.INTERNAL, ModalType.MUST)),
+                          'P');
+        pmpg.setEdgeLabel(pmpg.connect(n0,
+                                       n0,
+                                       new ProceduralModalEdgePropertyImpl(ProceduralType.INTERNAL, ModalType.MUST)),
+                          'a');
+        pmpg.setEdgeLabel(pmpg.connect(n0,
+                                       n0,
+                                       new ProceduralModalEdgePropertyImpl(ProceduralType.INTERNAL, ModalType.MUST)),
+                          'b');
+        pmpg.setEdgeLabel(pmpg.connect(n0,
+                                       n0,
+                                       new ProceduralModalEdgePropertyImpl(ProceduralType.INTERNAL, ModalType.MUST)),
+                          'c');
+        pmpg.setEdgeLabel(pmpg.connect(n0,
+                                       n0,
+                                       new ProceduralModalEdgePropertyImpl(ProceduralType.PROCESS, ModalType.MUST)),
+                          'Q');
+        pmpg.setEdgeLabel(pmpg.connect(n0,
+                                       end,
+                                       new ProceduralModalEdgePropertyImpl(ProceduralType.INTERNAL, ModalType.MUST)),
+                          'R');
+
+        pmpg.setInitialNode(init);
+        pmpg.setFinalNode(end);
+
+        return new DefaultCFMPS<>('Q', Collections.singletonMap('Q', pmpg));
+
     }
 
 }
