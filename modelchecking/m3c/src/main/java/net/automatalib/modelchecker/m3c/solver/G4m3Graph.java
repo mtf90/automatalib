@@ -16,6 +16,7 @@ import de.metaframe.gear.game.GameGraphNode;
 import de.metaframe.gear.game.GameGraphNode.Type;
 import de.metaframe.gear.model.Edge;
 import de.metaframe.gear.model.Model;
+import de.metaframe.gear.model.Model.EdgeType;
 import de.metaframe.gear.sexp.SymbolicExpression;
 import net.automatalib.common.util.Pair;
 import net.automatalib.graph.Graph;
@@ -35,6 +36,9 @@ import net.automatalib.modelchecker.m3c.formula.modalmu.GfpNode;
 import net.automatalib.modelchecker.m3c.formula.modalmu.LfpNode;
 import net.automatalib.modelchecker.m3c.formula.modalmu.VariableNode;
 import net.automatalib.ts.modal.transition.ProceduralModalEdgeProperty;
+import net.automatalib.visualization.DefaultVisualizationHelper;
+import net.automatalib.visualization.VisualizationHelper;
+import org.checkerframework.checker.units.qual.N;
 
 public class G4m3Graph<N, L, E, AP> extends GameGraph<N, E> implements GraphViewable {
 
@@ -56,7 +60,7 @@ public class G4m3Graph<N, L, E, AP> extends GameGraph<N, E> implements GraphView
     // mapping from atomic fix point variable expressions to fix point expression they are bound to
     private final Map<String, FormulaNode<L, AP>> fixvar2fix = new HashMap<>();
     private Map<FormulaNode<L, AP>, Integer> exp2prio = new HashMap<>();
-    private Map<Pair<GameGraphNode<N>, GameGraphNode<N>>, L> labels = new HashMap<>();
+    private Map<Pair<GameGraphNode<N>, GameGraphNode<N>>, Set<L>> labels = new HashMap<>();
 
     G4m3Graph(ProceduralModalProcessGraph<N, L, E, AP, ?> model,
               FormulaNode<L, AP> formulaNode,
@@ -142,16 +146,25 @@ public class G4m3Graph<N, L, E, AP> extends GameGraph<N, E> implements GraphView
                                 configureEdge(ggn, succ, label);
                             }
                         } else {
-                            // for all teilformeln die dadurch erfüllt werden.
-                            BitSet tgtContext = unit.propTransformers.get(tgt).evaluate(dg.toBoolArray(context));
-                            AbstractDDSolver<?, L, AP>.WorkUnit<?, ?> calledUnit = this.units.get(label);
-                            BitSet callContext = calledUnit.getInitialTransformer().evaluate(dg.toBoolArray(tgtContext));
-                            for (FormulaNode<L, AP> subformula : subformulas) {
-                                if (callContext.get(subformula.getVarNumber())) {
-                                    GameGraphNode<N> succ = this.ggnodecache.get(tgt).get(subformula);
+                            for (FormulaNode<L, AP> sub : subformulas) {
+                                boolean[] singleton = new boolean[dg.getNumVariables()];
+                                singleton[sub.getVarNumber()] = true;
+                                AbstractDDSolver<?, L, AP>.WorkUnit<?, ?> calledUnit = this.units.get(label);
+                                BitSet callContext = calledUnit.getInitialTransformer().evaluate(singleton);
+                                if (callContext.get(f.getVarNumber())) {
+                                    GameGraphNode<N> succ = this.ggnodecache.get(tgt).get(sub);
                                     configureEdge(ggn, succ, label);
                                 }
                             }
+//                            BitSet tgtContext = unit.propTransformers.get(tgt).evaluate(dg.toBoolArray(context));
+//                            AbstractDDSolver<?, L, AP>.WorkUnit<?, ?> calledUnit = this.units.get(label);
+//                            BitSet callContext = calledUnit.getInitialTransformer().evaluate(dg.toBoolArray(tgtContext));
+//                            for (FormulaNode<L, AP> subformula : subformulas) {
+//                                if (callContext.get(subformula.getVarNumber())) {
+//                                    GameGraphNode<N> succ = this.ggnodecache.get(tgt).get(subformula);
+//                                    configureEdge(ggn, succ, label);
+//                                }
+//                            }
                         }
                     }
                 } else if (exp instanceof VariableNode) {
@@ -178,12 +191,12 @@ public class G4m3Graph<N, L, E, AP> extends GameGraph<N, E> implements GraphView
         this.succs.get(src).add(tgt);
         this.preds.get(tgt).add(src);
         if (label != null) {
-            this.labels.put(Pair.of(src, tgt), label);
+            this.labels.computeIfAbsent(Pair.of(src, tgt), k -> new HashSet<>()).add(label);
         }
     }
 
     public String getLabelBetween(GameGraphNode<N> src, GameGraphNode<N> tgt) {
-        L label = this.labels.get(Pair.of(src, tgt));
+        Set<L> label = this.labels.get(Pair.of(src, tgt));
         if (label != null) {
             return label.toString();
         }
@@ -475,6 +488,22 @@ public class G4m3Graph<N, L, E, AP> extends GameGraph<N, E> implements GraphView
         @Override
         public Collection<GNode<N>> getNodes() {
             return this.nodes.values();
+        }
+
+        @Override
+        public VisualizationHelper<GNode<N>, GNode<N>> getVisualizationHelper() {
+            return new DefaultVisualizationHelper<>() {
+
+                @Override
+                public boolean getEdgeProperties(GNode<N> src,
+                                                 GNode<N> edge,
+                                                 GNode<N> tgt,
+                                                 Map<String, String> properties) {
+                    String label = getLabelBetween(src.ggnode, edge.ggnode);
+                    properties.put(EdgeAttrs.LABEL, label == null ? "" : label);
+                    return true;
+                }
+            };
         }
     }
 
