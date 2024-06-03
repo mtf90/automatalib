@@ -4,14 +4,18 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import de.metaframe.gear.game.GameGraphNode;
 import de.metaframe.gear.game.strategies.Strategy;
 import de.metaframe.gear.game.strategies.WinningStrategies;
 import net.automatalib.graph.ContextFreeModalProcessSystem;
+import net.automatalib.graph.ProceduralModalProcessGraph;
 import net.automatalib.modelchecker.m3c.formula.DependencyGraph;
 import net.automatalib.modelchecker.m3c.formula.FormulaNode;
+import net.automatalib.modelchecker.m3c.solver.AbstractDDSolver.WorkUnit;
 import net.automatalib.visualization.Visualization;
 
 public class GEARMC<L, AP> {
@@ -31,32 +35,34 @@ public class GEARMC<L, AP> {
         this.initialContext = initialContext;
     }
 
-    public List<?> findWitness(FormulaNode<L, AP> formula) {
+    public List<L> findWitness(FormulaNode<L, AP> formula) {
+        return findWitness(formula, model.getMainProcess());
+    }
 
-        L mainLabel = model.getMainProcess();
-        AbstractDDSolver<?, L, AP>.WorkUnit<?, ?> unit = units.get(mainLabel);
-
+    public List<L> findWitness(FormulaNode<L, AP> formula, L label) {
+        AbstractDDSolver<?, L, AP>.WorkUnit<?, ?> unit = units.get(label);
         return findWitness(unit, formula);
     }
 
-    private <N, E> List<N> findWitness(AbstractDDSolver<?, L, AP>.WorkUnit<N, E> unit,
+    private <N, E> List<L> findWitness(AbstractDDSolver<?, L, AP>.WorkUnit<N, E> unit,
                                        FormulaNode<L, AP> formula) {
 
         G4m3Graph<N, L, E, AP> graph = new G4m3Graph<>(unit.pmpg, formula, dg, unit, this.units, this.initialContext);
         WinningStrategies<N, E> winningStrategies = new WinningStrategies<>(graph);
 
-        List<N> result = findWitnessPath(graph, winningStrategies, graph.getInitialNodes().iterator().next().getModelNode());
+        List<L> result = findWitnessPath(graph, unit, winningStrategies, unit.pmpg.getInitialNode());
 
 //        Visualization.visualize(graph);
 
         return result;
     }
 
-    public static <N, L, E, AP> List<N> findWitnessPath(G4m3Graph<N, L, E, AP> gamegraph,
-                                                      WinningStrategies<N, E> winningStrategies,
-                                                      N modelnode) {
+    private <N, E> List<L> findWitnessPath(G4m3Graph<N, L, E, AP> gamegraph,
+                                           AbstractDDSolver<?, L, AP>.WorkUnit<N, E> unit,
+                                           WinningStrategies<N, E> winningStrategies,
+                                           N modelnode) {
 
-        List<String> path = new ArrayList<>();
+        List<L> path = new ArrayList<>();
 
         if (winningStrategies == null) {
             throw new IllegalStateException("There is no strategy present. You need to perform model checking first.");
@@ -65,7 +71,7 @@ public class GEARMC<L, AP> {
 
         // return an empy list if the clicked node is not part of an error path
         if (!winningStrategies.getOrPlayerStrategy().getDef().contains(gamegraph.getGameGraphNode(modelnode))) {
-            return new ArrayList<N>();
+            return new ArrayList<>();
         }
 
         // creating result list
@@ -96,9 +102,22 @@ public class GEARMC<L, AP> {
             }
 
             if (ggNodes.size() > 1) {
-                String label = gamegraph.getLabelBetween(ggNodes.get(ggNodes.size() - 2), ggNode);
-                if (label != null) {
-                    path.add(label);
+//                String label = gamegraph.getLabelBetween(ggNodes.get(ggNodes.size() - 2), ggNode);
+//                if (label != null) {
+//                    path.add(label);
+//                }
+                GameGraphNode<N> ggPrev = ggNodes.get(ggNodes.size() - 2);
+                Set<E> edges = gamegraph.getEdgesBetween(ggPrev, ggNode);
+                if (edges != null && !edges.isEmpty()) {
+                    E edge = edges.iterator().next();
+                    if (unit.pmpg.getEdgeProperty(edge).isProcess()) {
+                        BitSet tgtContext = unit.propTransformers.get(result.get(result.size() - 1)).evaluate(dg.toBoolArray(initialContext));
+                        GEARMC<L, AP> mc = new GEARMC<>(model, units, dg, tgtContext);
+                        List<L> sub = mc.findWitness(gamegraph.getFormula(ggPrev), unit.pmpg.getEdgeLabel(edge));
+                        path.addAll(sub);
+                    } else {
+                        path.add(unit.pmpg.getEdgeLabel(edge));
+                    }
                 }
             }
 
@@ -112,7 +131,7 @@ public class GEARMC<L, AP> {
         System.out.println(ggNodes.stream().map(Object::toString).collect(Collectors.joining("\n")));
         System.out.println();
         System.out.println(path);
-        return result;
+        return path;
     }
 
     public static <N, L, E, AP> List<N> findErrorPath(G4m3Graph<N, L, E, AP> gamegraph,
