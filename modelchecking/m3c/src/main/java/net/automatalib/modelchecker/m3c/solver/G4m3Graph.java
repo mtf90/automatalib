@@ -9,7 +9,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import de.metaframe.gear.game.GameGraph;
 import de.metaframe.gear.game.GameGraphNode;
@@ -60,7 +62,7 @@ public class G4m3Graph<N, L, E, AP> extends GameGraph<N, E> implements GraphView
     // mapping from atomic fix point variable expressions to fix point expression they are bound to
     private final Map<String, FormulaNode<L, AP>> fixvar2fix = new HashMap<>();
     private Map<FormulaNode<L, AP>, Integer> exp2prio = new HashMap<>();
-    private Map<Pair<GameGraphNode<N>, GameGraphNode<N>>, Set<L>> labels = new HashMap<>();
+    private Map<Pair<GameGraphNode<N>, GameGraphNode<N>>, Set<E>> labels = new HashMap<>();
 
     G4m3Graph(ProceduralModalProcessGraph<N, L, E, AP, ?> model,
               FormulaNode<L, AP> formulaNode,
@@ -143,17 +145,24 @@ public class G4m3Graph<N, L, E, AP> extends GameGraph<N, E> implements GraphView
                             // mapping to the only operand and target of edge
                             if (f.getAction() == null || f.getAction().equals(label)) {
                                 GameGraphNode<N> succ = this.ggnodecache.get(tgt).get(f.getChild());
-                                configureEdge(ggn, succ, label);
+                                configureEdge(ggn, succ, edge);
                             }
                         } else {
                             for (FormulaNode<L, AP> sub : subformulas) {
+
+                                if (sub.equals(this.root) || ((f.getChild() instanceof VariableNode) &&
+                                                              this.fixvar2fix.get(((VariableNode<L, AP>) f.getChild()).getVariable())
+                                                                             .equals(this.root))) {
+                                    continue;
+                                }
+
                                 boolean[] singleton = new boolean[dg.getNumVariables()];
                                 singleton[sub.getVarNumber()] = true;
                                 AbstractDDSolver<?, L, AP>.WorkUnit<?, ?> calledUnit = this.units.get(label);
                                 BitSet callContext = calledUnit.getInitialTransformer().evaluate(singleton);
                                 if (callContext.get(f.getVarNumber())) {
                                     GameGraphNode<N> succ = this.ggnodecache.get(tgt).get(sub);
-                                    configureEdge(ggn, succ, label);
+                                    configureEdge(ggn, succ, edge);
                                 }
                             }
 //                            BitSet tgtContext = unit.propTransformers.get(tgt).evaluate(dg.toBoolArray(context));
@@ -187,18 +196,33 @@ public class G4m3Graph<N, L, E, AP> extends GameGraph<N, E> implements GraphView
         configureEdge(src, tgt, null);
     }
 
-    private void configureEdge(GameGraphNode<N> src, GameGraphNode<N> tgt, L label) {
+    private void configureEdge(GameGraphNode<N> src, GameGraphNode<N> tgt, E edge) {
         this.succs.get(src).add(tgt);
         this.preds.get(tgt).add(src);
-        if (label != null) {
-            this.labels.computeIfAbsent(Pair.of(src, tgt), k -> new HashSet<>()).add(label);
+        if (edge != null) {
+            this.labels.computeIfAbsent(Pair.of(src, tgt), k -> new HashSet<>()).add(edge);
         }
     }
 
     public String getLabelBetween(GameGraphNode<N> src, GameGraphNode<N> tgt) {
-        Set<L> label = this.labels.get(Pair.of(src, tgt));
-        if (label != null) {
-            return label.toString();
+        Set<E> edges = this.labels.get(Pair.of(src, tgt));
+        if (edges != null && !edges.isEmpty()) {
+            return edges.stream().map(model::getEdgeLabel).map(Objects::toString).collect(Collectors.joining(", ", "{", "}"));
+        }
+
+        return null;
+    }
+
+    public Set<E> getEdgesBetween(GameGraphNode<N> src, GameGraphNode<N> tgt) {
+        return this.labels.get(Pair.of(src, tgt));
+    }
+
+    public FormulaNode<L, AP> getFormula(GameGraphNode<N> ggNode) {
+        final Map<FormulaNode<L, AP>, GameGraphNode<N>> map = this.ggnodecache.get(ggNode.getModelNode());
+        for (Entry<FormulaNode<L, AP>, GameGraphNode<N>> e : map.entrySet()) {
+            if (Objects.equals(ggNode, e.getValue())) {
+                return e.getKey();
+            }
         }
 
         return null;

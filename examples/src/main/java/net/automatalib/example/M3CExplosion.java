@@ -64,9 +64,9 @@ public class M3CExplosion {
 
         System.out.println("Duration: " + (after - before) / 1000f);
 
-        if (gearCE != null) {
-            System.out.println(gearCE);
-        }
+//        if (gearCE != null) {
+//            System.out.println(gearCE);
+//        }
 
     }
 
