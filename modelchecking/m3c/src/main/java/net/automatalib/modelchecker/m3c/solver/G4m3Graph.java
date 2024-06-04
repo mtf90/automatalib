@@ -248,6 +248,10 @@ public class G4m3Graph<N, L, E, AP> extends GameGraph<N, E> implements GraphView
 
     private Type getType(N node, FormulaNode<L, AP> formulaNode) {
 
+        if (Objects.equals(node, this.model.getFinalNode())) {
+            return this.context.get(formulaNode.getVarNumber()) ? Type.CONJUNCTIVE : Type.DISJUNCTIVE;
+        }
+
         if (formulaNode instanceof VariableNode) {
             VariableNode<L, AP> f = (VariableNode<L, AP>) formulaNode;
             return getType(node, this.fixvar2fix.get(f.getVariable()));
