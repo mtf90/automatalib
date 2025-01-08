@@ -28,14 +28,14 @@ public class DynamicNodeMappingTest {
     @Test
     public void testGraph() {
         CompactGraph graph = new CompactGraph(5);
-        graph.addNode();
-        graph.addNode();
-        graph.addNode();
+        graph.addNode(null);
+        graph.addNode(null);
+        graph.addNode(null);
 
-        testMutableGraph(graph);
+        testMutableGraph(graph, null);
     }
 
-    private static <N> void testMutableGraph(MutableGraph<N, ?, ?, ?> graph) {
+    private static <N, NP> void testMutableGraph(MutableGraph<N, ?, NP, ?> graph, NP np) {
 
         final List<N> states = new ArrayList<>(graph.getNodes());
 
@@ -53,8 +53,8 @@ public class DynamicNodeMappingTest {
         Assert.assertEquals(mapping.get(n1).intValue(), 1);
         Assert.assertEquals(mapping.get(n2).intValue(), 2);
 
-        final N n3 = graph.addNode();
-        final N n4 = graph.addNode();
+        final N n3 = graph.addNode(np);
+        final N n4 = graph.addNode(np);
         mapping.put(n3, 3);
         mapping.put(n4, 4);
 

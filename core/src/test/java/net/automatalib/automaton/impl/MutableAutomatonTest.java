@@ -47,6 +47,7 @@ import net.automatalib.ts.modal.transition.ModalEdgeProperty.ModalType;
 import net.automatalib.ts.modal.transition.MutableModalEdgeProperty;
 import net.automatalib.ts.modal.transition.impl.ModalEdgePropertyImpl;
 import net.automatalib.word.Word;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -151,7 +152,7 @@ public class MutableAutomatonTest {
         final M automaton = creator.createAutomaton(alphabet, size);
 
         for (int i = 0; i < size; i++) {
-            automaton.addState();
+            automaton.addState(null);
         }
 
         return automaton;
@@ -159,7 +160,7 @@ public class MutableAutomatonTest {
 
     static <M extends MutableAutomaton<S, I, T, SP, TP>, S, I, T, SP, TP> void fillRandomly(M automaton,
                                                                                             Alphabet<I> alphabet,
-                                                                                            List<SP> stateProps,
+                                                                                            List<? extends SP> stateProps,
                                                                                             List<? extends TP> transProps) {
         final StateIDs<S> stateIDs = automaton.stateIDs();
 
@@ -167,7 +168,7 @@ public class MutableAutomatonTest {
             for (I i : alphabet) {
                 final TP tProp = RandomUtil.choose(RANDOM, transProps);
                 final S succ = stateIDs.getState(RANDOM.nextInt(automaton.size()));
-                final T trans = automaton.createTransition(succ, null);
+                final T trans = automaton.createTransition(succ, tProp);
 
                 automaton.setTransitionProperty(trans, tProp);
                 automaton.setTransitions(s, i, Collections.singleton(trans));
@@ -192,7 +193,7 @@ public class MutableAutomatonTest {
         final boolean expectException = automaton instanceof UniversalDeterministicAutomaton;
 
         try {
-            final S init2 = automaton.addInitialState();
+            final S init2 = automaton.addInitialState(sp);
             Assert.assertEquals(automaton.getInitialStates().size(), 2);
             automaton.setInitial(init2, false);
         } catch (IllegalStateException ise) {
@@ -294,21 +295,22 @@ public class MutableAutomatonTest {
         checkSignature(oldTpProps, newTpProps, stateIndex * alphabet.size(), alphabet.size());
     }
 
-    private <M extends MutableAutomaton<S, I, T, SP, TP>, S, I, T, SP, TP> void clearAndCheck(M automaton,
-                                                                                              Alphabet<I> alphabet) {
+    private <M extends MutableAutomaton<S, I, T, SP, TP>, S, I, T, @Nullable SP, TP> void clearAndCheck(M automaton,
+                                                                                                        Alphabet<I> alphabet) {
         automaton.clear();
 
         Assert.assertTrue(automaton.getStates().isEmpty());
 
         for (int i = 0; i < SIZE; i++) {
-            automaton.addState();
+            automaton.addState(null);
         }
 
         checkEmptyProperties(automaton, alphabet);
     }
 
-    private <M extends MutableAutomaton<S, I, T, SP, TP>, S, I, T, SP, TP> void checkEmptyProperties(M automaton,
-                                                                                                     Alphabet<I> alphabet) {
+    private <M extends MutableAutomaton<S, I, T, SP, TP>, S, I, T, @Nullable SP, @Nullable TP> void checkEmptyProperties(
+            M automaton,
+            Alphabet<I> alphabet) {
         for (S s : automaton) {
             for (I i : alphabet) {
                 Assert.assertTrue(automaton.getSuccessors(s, i).isEmpty());

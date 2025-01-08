@@ -52,6 +52,14 @@ public class CompactGraph extends AbstractCompactGraph<SimpleEdge, Void, Void> {
         return null;
     }
 
+    public Integer addNode() {
+        return addNode(null);
+    }
+
+    public int addIntNode() {
+        return addIntNode(null);
+    }
+
     public SimpleEdge connect(Integer source, Integer target) {
         return super.connect(source, target, null);
     }

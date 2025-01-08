@@ -47,15 +47,15 @@ public final class DFSExample {
         int n0 = graph.addIntNode(), n1 = graph.addIntNode(), n2 = graph.addIntNode(), n3 = graph.addIntNode(), n4 =
                 graph.addIntNode();
 
-        graph.connect(n0, n1);
-        graph.connect(n0, n2);
-        graph.connect(n1, n1);
-        graph.connect(n1, n2);
-        graph.connect(n2, n3);
-        graph.connect(n3, n1);
-        graph.connect(n3, n0);
-        graph.connect(n0, n4);
-        graph.connect(n4, n3);
+        graph.connect(n0, n1, null);
+        graph.connect(n0, n2, null);
+        graph.connect(n1, n1, null);
+        graph.connect(n1, n2, null);
+        graph.connect(n2, n3, null);
+        graph.connect(n3, n1, null);
+        graph.connect(n3, n0, null);
+        graph.connect(n0, n4, null);
+        graph.connect(n4, n3, null);
 
         MyDFSVisitor<Integer, SimpleEdge> vis = new MyDFSVisitor<>(graph);
         GraphTraversal.depthFirst(graph, n0, vis);

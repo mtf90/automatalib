@@ -208,10 +208,10 @@ final class DOTSerializationUtil {
 
     private static CompactUniversalGraph<String, String> buildGraph() {
         final CompactUniversalGraph<String, String> result = new CompactUniversalGraph<>();
-        result.addIntNode();
+        result.addIntNode("");
 
         for (int i = 2; i < 2 << 3; i++) {
-            result.addIntNode();
+            result.addIntNode("");
             result.connect((i / 2 + i % 2) - 1, i - 1, Integer.toString(i - 1));
         }
 
@@ -255,7 +255,7 @@ final class DOTSerializationUtil {
                 new ProceduralModalEdgePropertyImpl(ProceduralType.PROCESS, ModalType.MAY);
 
         final CompactPMPG<Character, Character> s = new CompactPMPG<>('?');
-        final int s0 = s.addIntNode();
+        final int s0 = s.addIntNode(Collections.emptySet());
         // Set.of doesn't have a deterministic (hash-based) iteration order, so use this workaround instead
         final int s1 = s.addIntNode(new HashSet<>(Arrays.asList('a', 'b')));
         final int s2 = s.addIntNode(Collections.singleton('c'));
@@ -272,7 +272,7 @@ final class DOTSerializationUtil {
         s.setInitialNode(s0);
 
         final CompactPMPG<Character, Character> t = new CompactPMPG<>('?');
-        final int t0 = t.addIntNode();
+        final int t0 = t.addIntNode(Collections.emptySet());
         final int t1 = t.addIntNode(Collections.singleton('d'));
 
         t.connect(t0, t1, p1);

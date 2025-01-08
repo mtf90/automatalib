@@ -68,7 +68,7 @@ public class MutableStateIntAbstractionTest extends MutableAutomatonTest {
             final M result = (M) new MockUp<>((MutableDeterministic<S, I, T, SP, TP>) automaton, alphabet);
 
             for (int i = 0; i < size; i++) {
-                result.addState();
+                result.addState(null);
             }
 
             return result;
@@ -156,16 +156,6 @@ public class MutableStateIntAbstractionTest extends MutableAutomatonTest {
         @Override
         public S addState(@Nullable SP property) {
             return stateIDs.getState(abstraction.addIntState(property));
-        }
-
-        @Override
-        public S addState() {
-            return stateIDs.getState(abstraction.addIntState());
-        }
-
-        @Override
-        public S addInitialState() {
-            return stateIDs.getState(abstraction.addIntInitialState());
         }
 
         @Override

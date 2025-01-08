@@ -41,4 +41,12 @@ public class CompactSimpleBidiGraph<EP> extends AbstractCompactUniversalBidiGrap
         return null;
     }
 
+    public Integer addNode() {
+        return super.addNode(null);
+    }
+
+    public int addIntNode() {
+        return super.addIntNode(null);
+    }
+
 }

@@ -59,15 +59,16 @@ public class MutableFullIntAbstractionTest extends MutableAutomatonTest {
     protected <M extends MutableAutomaton<S, I, T, SP, TP>, S, I, T, SP, TP> M createInitialAutomaton(AutomatonCreator<M, I> creator,
                                                                                                       Alphabet<I> alphabet,
                                                                                                       int size) {
+
         final M automaton = creator.createAutomaton(alphabet, size);
 
         if (automaton instanceof MutableDeterministic) {
 
             @SuppressWarnings("unchecked")
-            final M result = (M) new MockUp<>((MutableDeterministic<S, I, T, SP, TP>) automaton, alphabet);
+            final M result = (M) new MockUp<>((MutableDeterministic<?, I, ?, ?, ?>) automaton, alphabet);
 
             for (int i = 0; i < size; i++) {
-                result.addState();
+                result.addState(null);
             }
 
             return result;
@@ -158,16 +159,6 @@ public class MutableFullIntAbstractionTest extends MutableAutomatonTest {
         @Override
         public S addState(@Nullable SP property) {
             return stateIDs.getState(abstraction.addIntState(property));
-        }
-
-        @Override
-        public S addState() {
-            return stateIDs.getState(abstraction.addIntState());
-        }
-
-        @Override
-        public S addInitialState() {
-            return stateIDs.getState(abstraction.addIntInitialState());
         }
 
         @Override

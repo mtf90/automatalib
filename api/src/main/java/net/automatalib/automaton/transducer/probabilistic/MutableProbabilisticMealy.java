@@ -24,6 +24,10 @@ public interface MutableProbabilisticMealy<S, I, T, O> extends ProbabilisticMeal
                                                                MutableProbabilistic<T>,
                                                                MutableAutomaton<S, I, T, Void, ProbabilisticOutput<O>> {
 
+    default S addState() {
+        return addState(null);
+    }
+
     @Override
     default void setStateProperty(S state, Void property) {}
 

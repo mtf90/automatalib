@@ -23,7 +23,6 @@ import java.util.List;
 import net.automatalib.common.util.array.ArrayStorage;
 import net.automatalib.graph.BidirectionalGraph;
 import net.automatalib.graph.MutableUniversalBidirectionalGraph;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 public abstract class AbstractCompactUniversalBidiGraph<NP, EP>
         extends AbstractCompactUniversalGraph<CompactBidiEdge<EP>, NP, EP>
@@ -52,7 +51,7 @@ public abstract class AbstractCompactUniversalBidiGraph<NP, EP>
     }
 
     @Override
-    public int addIntNode(@Nullable NP property) {
+    public int addIntNode(NP property) {
         int node = super.addIntNode(property);
         inEdges.ensureCapacity(node + 1);
         inEdges.set(node, new ArrayList<>());

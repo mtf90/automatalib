@@ -143,7 +143,7 @@ abstract class AbstractTAFBuilder<S, T, SP, TP, M extends MutableDeterministic<S
     }
 
     protected S lookupState(String identifier) {
-        return stateMap.computeIfAbsent(identifier, k -> automaton.addState());
+        return stateMap.computeIfAbsent(identifier, k -> automaton.addState(null));
     }
 
     protected void doAddWildcardTransitions(String source, String target, TP transProperty) {

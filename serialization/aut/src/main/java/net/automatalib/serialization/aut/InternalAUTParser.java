@@ -75,7 +75,7 @@ class InternalAUTParser<I, T, A extends MutableAutomaton<Integer, I, T, ?, ?>>
             final A result = creator.createAutomaton(alphabet, numStates);
 
             for (int i = 0; i < numStates; i++) {
-                result.addState();
+                result.addState(null);
             }
 
             for (Map.Entry<Integer, Map<String, Set<Integer>>> outgoing : transitionMap.entrySet()) {

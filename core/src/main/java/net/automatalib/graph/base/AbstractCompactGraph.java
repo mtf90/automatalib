@@ -25,7 +25,6 @@ import net.automatalib.common.util.collection.CollectionUtil;
 import net.automatalib.graph.MutableGraph;
 import net.automatalib.graph.MutableGraph.IntAbstraction;
 import net.automatalib.graph.concept.NodeIDs;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 public abstract class AbstractCompactGraph<E extends SimpleEdge, NP, EP>
         implements MutableGraph<Integer, E, NP, EP>, IntAbstraction<E, NP, EP>, NodeIDs<Integer> {
@@ -77,18 +76,16 @@ public abstract class AbstractCompactGraph<E extends SimpleEdge, NP, EP>
     }
 
     @Override
-    public Integer addNode(@Nullable NP property) {
+    public Integer addNode(NP property) {
         return addIntNode(property);
     }
 
     @Override
-    public int addIntNode(@Nullable NP property) {
+    public int addIntNode(NP property) {
         int n = size++;
         edges.ensureCapacity(n + 1);
         edges.set(n, new ArrayList<>());
-        if (property != null) {
-            setNodeProperty(n, property);
-        }
+        setNodeProperty(n, property);
         return n;
     }
 

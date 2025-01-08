@@ -64,22 +64,12 @@ public interface MutableDeterministicAbstraction {
         }
 
         @Override
-        public int addIntState() {
-            return stateToInt(automaton.addState());
-        }
-
-        @Override
-        public int addIntState(@Nullable SP property) {
+        public int addIntState(SP property) {
             return stateToInt(automaton.addState(property));
         }
 
         @Override
-        public int addIntInitialState() {
-            return stateToInt(automaton.addInitialState());
-        }
-
-        @Override
-        public int addIntInitialState(@Nullable SP property) {
+        public int addIntInitialState(SP property) {
             return stateToInt(automaton.addInitialState(property));
         }
     }
@@ -123,22 +113,12 @@ public interface MutableDeterministicAbstraction {
         }
 
         @Override
-        public int addIntState() {
-            return stateAbstraction.addIntState();
-        }
-
-        @Override
-        public int addIntState(@Nullable SP property) {
+        public int addIntState(SP property) {
             return stateAbstraction.addIntState(property);
         }
 
         @Override
-        public int addIntInitialState() {
-            return stateAbstraction.addIntInitialState();
-        }
-
-        @Override
-        public int addIntInitialState(@Nullable SP property) {
+        public int addIntInitialState(SP property) {
             return stateAbstraction.addIntInitialState(property);
         }
     }

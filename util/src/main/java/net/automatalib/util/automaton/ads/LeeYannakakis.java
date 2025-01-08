@@ -309,7 +309,7 @@ public final class LeeYannakakis {
         final CompactUniversalGraph<Void, I> implicationGraph = new CompactUniversalGraph<>(nodeToPartitionMap.size());
 
         for (int i = 0; i < nodeToPartitionMap.size(); i++) {
-            implicationGraph.addIntNode();
+            implicationGraph.addIntNode(null);
         }
 
         partitionLoop:

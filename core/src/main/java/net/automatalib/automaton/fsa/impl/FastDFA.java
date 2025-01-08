@@ -18,8 +18,6 @@ package net.automatalib.automaton.fsa.impl;
 import net.automatalib.alphabet.Alphabet;
 import net.automatalib.automaton.base.AbstractFastMutableDet;
 import net.automatalib.automaton.fsa.MutableDFA;
-import net.automatalib.common.util.WrapperUtil;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class FastDFA<I> extends AbstractFastMutableDet<FastDFAState, I, FastDFAState, Boolean, Void>
         implements MutableDFA<FastDFAState, I> {
@@ -29,8 +27,8 @@ public class FastDFA<I> extends AbstractFastMutableDet<FastDFAState, I, FastDFAS
     }
 
     @Override
-    protected FastDFAState createState(@Nullable Boolean accepting) {
-        return createState(WrapperUtil.booleanValue(accepting));
+    protected FastDFAState createState(Boolean accepting) {
+        return createState(accepting.booleanValue());
     }
 
     private FastDFAState createState(boolean accepting) {

@@ -108,11 +108,11 @@ public abstract class AbstractCompact<I, T, SP, TP> implements MutableAutomaton<
     }
 
     @Override
-    public final Integer addState(@Nullable SP property) {
+    public final Integer addState(SP property) {
         return addIntState(property);
     }
 
-    public int addIntState(@Nullable SP property) {
+    public int addIntState(SP property) {
         int newState = numStates++;
         ensureCapacity(numStates);
         if (property != null) {
@@ -196,7 +196,7 @@ public abstract class AbstractCompact<I, T, SP, TP> implements MutableAutomaton<
 
     /**
      * Implementing classes should override this method in order to react to changes to the layout of their array-based
-     * state data, e.g. due to calls to {@link #addState()}.
+     * state data, e.g. due to calls to {@link #addState(Object)}.
      * <p>
      * Subclasses may use one of the {@link #updateStateStorage(Object[], Object, Payload)}... methods to conveniently
      * delegate this task to this base class. This leaves subclasses only with the task to invoke the provided update
@@ -230,7 +230,7 @@ public abstract class AbstractCompact<I, T, SP, TP> implements MutableAutomaton<
 
     /**
      * Implementing classes should override this method in order to react to changes to the layout of their array-based
-     * transition data, e.g. due to calls to {@link #addState()} or {@link #addAlphabetSymbol(Object)}.
+     * transition data, e.g. due to calls to {@link #addState(Object)} or {@link #addAlphabetSymbol(Object)}.
      * <p>
      * Subclasses may use one of the {@link #updateTransitionStorage(Object[], IntFunction, Object, Payload)}... methods
      * to conveniently delegate this task to this base class. This leaves subclasses only with the task to invoke the

@@ -32,7 +32,6 @@ import net.automatalib.automaton.fsa.impl.CompactDFA;
 import net.automatalib.automaton.graph.TransitionEdge;
 import net.automatalib.common.util.Holder;
 import net.automatalib.common.util.collection.IterableUtil;
-import net.automatalib.graph.MutableGraph;
 import net.automatalib.graph.UniversalGraph;
 import net.automatalib.graph.base.CompactEdge;
 import net.automatalib.graph.impl.CompactSimpleGraph;
@@ -89,11 +88,11 @@ public class TraversalTest {
     }
 
     @SafeVarargs
-    private static <N, EP> N addTreeTrace(MutableGraph<N, ?, ?, EP> tree, N init, EP... traceElements) {
-        N iter = init;
+    private static <EP> int addTreeTrace(CompactSimpleGraph<EP> tree, int init, EP... traceElements) {
+        int iter = init;
 
         for (EP ep : traceElements) {
-            final N next = tree.addNode();
+            final int next = tree.addIntNode();
             tree.connect(iter, next, ep);
             iter = next;
         }

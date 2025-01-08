@@ -15,8 +15,6 @@
  */
 package net.automatalib.graph;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 /**
  * A graph that allows modification. Note that this interface only exposes methods for extending a graph. If also
  * destructive modifications should be performed, {@link ShrinkableGraph} is the adequate interface.
@@ -33,15 +31,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public interface MutableGraph<N, E, NP, EP> extends UniversalGraph<N, E, NP, EP> {
 
     /**
-     * Adds a new node (with an empty property) to the graph.
-     *
-     * @return the newly inserted node
-     */
-    default N addNode() {
-        return addNode(null);
-    }
-
-    /**
      * Adds a new node with the given property to the graph.
      *
      * @param property
@@ -49,7 +38,7 @@ public interface MutableGraph<N, E, NP, EP> extends UniversalGraph<N, E, NP, EP>
      *
      * @return the newly inserted node
      */
-    N addNode(@Nullable NP property);
+    N addNode(NP property);
 
     /**
      * Inserts an edge in the graph.
@@ -98,15 +87,6 @@ public interface MutableGraph<N, E, NP, EP> extends UniversalGraph<N, E, NP, EP>
     interface IntAbstraction<E, NP, EP> extends UniversalGraph.IntAbstraction<E, NP, EP> {
 
         /**
-         * Int-abstracted version of {@link #addNode()}.
-         *
-         * @return the (int-abstracted) id of the newly inserted node
-         */
-        default int addIntNode() {
-            return addIntNode(null);
-        }
-
-        /**
          * Int-abstracted version of {@link #addNode(Object)}.
          *
          * @param property
@@ -114,7 +94,7 @@ public interface MutableGraph<N, E, NP, EP> extends UniversalGraph<N, E, NP, EP>
          *
          * @return the (int-abstracted) id of the newly inserted node
          */
-        int addIntNode(@Nullable NP property);
+        int addIntNode(NP property);
 
         /**
          * Int-abstracted version of {@link #connect(Object, Object, Object)}.

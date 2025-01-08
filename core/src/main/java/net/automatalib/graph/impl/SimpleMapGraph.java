@@ -26,7 +26,6 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import net.automatalib.graph.MutableGraph;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * A very simple graph realization, where nodes can be arbitrary Java objects. This graph does not support edge
@@ -37,7 +36,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * @param <N>
  *         node type
  */
-public class SimpleMapGraph<@Nullable N> implements MutableGraph<N, N, N, Void> {
+public class SimpleMapGraph<N> implements MutableGraph<N, N, N, Void> {
 
     private final Map<N, Collection<N>> structureMap;
     private final Supplier<? extends Collection<N>> adjCollSupplier;
@@ -122,15 +121,14 @@ public class SimpleMapGraph<@Nullable N> implements MutableGraph<N, N, N, Void> 
     }
 
     @Override
-    public N addNode(@Nullable N property) {
+    public N addNode(N property) {
         structureMap.putIfAbsent(property, adjCollSupplier.get());
         return property;
     }
 
-    @SuppressWarnings("nullness") // connecting non-added nodes is a data-flow problem
     @Override
     public N connect(N source, N target, Void property) {
-        structureMap.get(source).add(target);
+        structureMap.computeIfAbsent(source, k -> adjCollSupplier.get()).add(target);
         return target;
     }
 

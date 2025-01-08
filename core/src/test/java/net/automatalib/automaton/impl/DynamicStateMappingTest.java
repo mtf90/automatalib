@@ -30,20 +30,20 @@ public class DynamicStateMappingTest {
 
     @Test
     public void testShrinkableNonDeterministic() {
-        testShrinkableAutomaton(TestUtil.constructNFA());
+        testShrinkableAutomaton(TestUtil.constructNFA(), false);
     }
 
     @Test
     public void testShrinkableDeterministic() {
-        testShrinkableAutomaton(TestUtil.constructMealy());
+        testShrinkableAutomaton(TestUtil.constructMealy(), null);
     }
 
     @Test
     public void testDeterministic() {
-        testAutomaton(TestUtil.constructMealy(CompactMealy::new));
+        testAutomaton(TestUtil.constructMealy(CompactMealy::new), null);
     }
 
-    private static <S> void testShrinkableAutomaton(ShrinkableAutomaton<S, ?, ?, ?, ?> automaton) {
+    private static <S, SP> void testShrinkableAutomaton(ShrinkableAutomaton<S, ?, ?, SP, ?> automaton, SP sp) {
 
         final List<S> states = new ArrayList<>(automaton.getStates());
 
@@ -75,12 +75,12 @@ public class DynamicStateMappingTest {
         Assert.assertThrows(RuntimeException.class, () -> mapping.get(s1));
         Assert.assertThrows(RuntimeException.class, () -> mapping.get(s2));
 
-        final S s3 = automaton.addState();
+        final S s3 = automaton.addState(sp);
         mapping.put(s3, 3);
         Assert.assertEquals(mapping.get(s3).intValue(), 3);
     }
 
-    private static <S> void testAutomaton(MutableDeterministic<S, ?, ?, ?, ?> automaton) {
+    private static <S, SP> void testAutomaton(MutableDeterministic<S, ?, ?, SP, ?> automaton, SP sp) {
 
         final List<S> states = new ArrayList<>(automaton.getStates());
 
@@ -98,8 +98,8 @@ public class DynamicStateMappingTest {
         Assert.assertEquals(mapping.get(s1).intValue(), 1);
         Assert.assertEquals(mapping.get(s2).intValue(), 2);
 
-        final S s3 = automaton.addState();
-        final S s4 = automaton.addState();
+        final S s3 = automaton.addState(sp);
+        final S s4 = automaton.addState(sp);
         mapping.put(s3, 3);
         mapping.put(s4, 4);
 

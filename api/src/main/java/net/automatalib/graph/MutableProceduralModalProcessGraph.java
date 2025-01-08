@@ -52,7 +52,6 @@ public interface MutableProceduralModalProcessGraph<N, L, E, AP, TP extends Muta
         setNodeProperty(node, atomicPropositions);
     }
 
-    @Override
     default N addNode() {
         return addNode(Collections.emptySet());
     }

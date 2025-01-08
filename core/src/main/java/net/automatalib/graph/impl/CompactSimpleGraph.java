@@ -47,4 +47,12 @@ public class CompactSimpleGraph<EP> extends AbstractCompactUniversalGraph<Compac
         return new CompactEdge<>(target, property);
     }
 
+    public Integer addNode() {
+        return super.addNode(null);
+    }
+
+    public int addIntNode() {
+        return super.addIntNode(null);
+    }
+
 }
