@@ -17,9 +17,8 @@ package net.automatalib.graph.impl;
 
 import net.automatalib.common.util.array.ArrayStorage;
 import net.automatalib.graph.base.AbstractCompactBidiGraph;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
-public class CompactBidiGraph<@Nullable NP, @Nullable EP> extends AbstractCompactBidiGraph<NP, EP> {
+public class CompactBidiGraph<NP, EP> extends AbstractCompactBidiGraph<NP, EP> {
 
     private final ArrayStorage<NP> nodeProperties;
 
@@ -33,7 +32,7 @@ public class CompactBidiGraph<@Nullable NP, @Nullable EP> extends AbstractCompac
     }
 
     @Override
-    public void setNodeProperty(int node, @Nullable NP property) {
+    public void setNodeProperty(int node, NP property) {
         nodeProperties.ensureCapacity(node + 1);
         nodeProperties.set(node, property);
     }

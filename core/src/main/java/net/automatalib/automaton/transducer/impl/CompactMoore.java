@@ -21,7 +21,7 @@ import net.automatalib.automaton.impl.UniversalCompactSimpleDet;
 import net.automatalib.automaton.transducer.MutableMooreMachine;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-public class CompactMoore<I, @Nullable O> extends UniversalCompactSimpleDet<I, O>
+public class CompactMoore<I, O> extends UniversalCompactSimpleDet<I, O>
         implements MutableMooreMachine<Integer, I, Integer, O> {
 
     public CompactMoore(Alphabet<I> alphabet) {

@@ -21,6 +21,14 @@ import net.automatalib.automaton.concept.MutableTransitionOutput;
 public interface MutableMealyMachine<S, I, T, O>
         extends MealyMachine<S, I, T, O>, MutableDeterministic<S, I, T, Void, O>, MutableTransitionOutput<T, O> {
 
+    default S addState() {
+        return addState(null);
+    }
+
+    default S addInitialState() {
+        return addInitialState(null);
+    }
+
     @Override
     default void setStateProperty(S state, Void property) {}
 

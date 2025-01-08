@@ -177,17 +177,9 @@ public interface MutableDeterministic<S, I, T, SP, TP>
 
         T createTransition(int successor, TP property);
 
-        default int addIntState() {
-            return addIntState(null);
-        }
+        int addIntState(SP property);
 
-        int addIntState(@Nullable SP property);
-
-        default int addIntInitialState() {
-            return addIntInitialState(null);
-        }
-
-        int addIntInitialState(@Nullable SP property);
+        int addIntInitialState(SP property);
     }
 
     /**

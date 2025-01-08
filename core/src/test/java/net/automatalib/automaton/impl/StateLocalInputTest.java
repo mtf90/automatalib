@@ -89,14 +89,14 @@ public class StateLocalInputTest {
         this.testAutomaton(new CompactSST<>(ALPHABET));
     }
 
-    private <M extends MutableAutomaton<S, Integer, T, SP, TP> & StateLocalInput<S, Integer>, S, T, SP, TP> void testAutomaton(
+    private <M extends MutableAutomaton<S, Integer, ?, ?, ?> & StateLocalInput<S, Integer>, S> void testAutomaton(
             final M automaton) {
 
         // construct cyclic automaton: symbols increase clock-wise and decrease counter-clock-wise
-        final S s1 = automaton.addInitialState();
-        final S s2 = automaton.addState();
-        final S s3 = automaton.addState();
-        final S s4 = automaton.addState();
+        final S s1 = automaton.addInitialState(null);
+        final S s2 = automaton.addState(null);
+        final S s3 = automaton.addState(null);
+        final S s4 = automaton.addState(null);
 
         automaton.addTransition(s1, 1, s2, null);
         automaton.addTransition(s2, 2, s3, null);

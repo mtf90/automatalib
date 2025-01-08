@@ -58,7 +58,7 @@ public abstract class AbstractFastMutable<S extends AbstractFastState<?>, I, T, 
     }
 
     @Override
-    public S addState(@Nullable SP property) {
+    public S addState(SP property) {
         S newState = createState(property);
         states.add(newState);
         return newState;
@@ -69,7 +69,7 @@ public abstract class AbstractFastMutable<S extends AbstractFastState<?>, I, T, 
         state.clearTransitionObjects();
     }
 
-    protected abstract S createState(@Nullable SP property);
+    protected abstract S createState(SP property);
 
     @Override
     public void removeState(S state, @Nullable S replacement) {

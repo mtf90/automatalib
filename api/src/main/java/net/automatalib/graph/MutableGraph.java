@@ -15,8 +15,6 @@
  */
 package net.automatalib.graph;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 /**
  * A graph that allows modification. Note that this interface only exposes methods for extending a graph. If also
  * destructive modifications should be performed, {@link ShrinkableGraph} is the adequate interface.
@@ -33,15 +31,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public interface MutableGraph<N, E, NP, EP> extends UniversalGraph<N, E, NP, EP> {
 
     /**
-     * Adds a new node (with an empty property) to the graph.
-     *
-     * @return the newly inserted node
-     */
-    default N addNode() {
-        return addNode(null);
-    }
-
-    /**
      * Adds a new node with the given property to the graph.
      *
      * @param property
@@ -49,22 +38,7 @@ public interface MutableGraph<N, E, NP, EP> extends UniversalGraph<N, E, NP, EP>
      *
      * @return the newly inserted node
      */
-    N addNode(@Nullable NP property);
-
-    /**
-     * Inserts an edge in the graph, with the default property. Calling this method should be equivalent to invoking
-     * {@link #connect(Object, Object, Object)} with a {@code null} property value.
-     *
-     * @param source
-     *         the source node
-     * @param target
-     *         the target node
-     *
-     * @return the edge connecting the given nodes
-     */
-    default E connect(N source, N target) {
-        return connect(source, target, null);
-    }
+    N addNode(NP property);
 
     /**
      * Inserts an edge in the graph.
@@ -78,7 +52,7 @@ public interface MutableGraph<N, E, NP, EP> extends UniversalGraph<N, E, NP, EP>
      *
      * @return the newly inserted edge
      */
-    E connect(N source, N target, @Nullable EP property);
+    E connect(N source, N target, EP property);
 
     /**
      * Sets the node property of the given node.
@@ -113,15 +87,6 @@ public interface MutableGraph<N, E, NP, EP> extends UniversalGraph<N, E, NP, EP>
     interface IntAbstraction<E, NP, EP> extends UniversalGraph.IntAbstraction<E, NP, EP> {
 
         /**
-         * Int-abstracted version of {@link #addNode()}.
-         *
-         * @return the (int-abstracted) id of the newly inserted node
-         */
-        default int addIntNode() {
-            return addIntNode(null);
-        }
-
-        /**
          * Int-abstracted version of {@link #addNode(Object)}.
          *
          * @param property
@@ -129,21 +94,7 @@ public interface MutableGraph<N, E, NP, EP> extends UniversalGraph<N, E, NP, EP>
          *
          * @return the (int-abstracted) id of the newly inserted node
          */
-        int addIntNode(@Nullable NP property);
-
-        /**
-         * Int-abstracted version of {@link #connect(Object, Object)}.
-         *
-         * @param source
-         *         the (int-abstracted) id of the source node
-         * @param target
-         *         the (int-abstracted) id of the target node
-         *
-         * @return the newly created edge
-         */
-        default E connect(int source, int target) {
-            return connect(source, target, null);
-        }
+        int addIntNode(NP property);
 
         /**
          * Int-abstracted version of {@link #connect(Object, Object, Object)}.
@@ -157,7 +108,7 @@ public interface MutableGraph<N, E, NP, EP> extends UniversalGraph<N, E, NP, EP>
          *
          * @return the newly created edge
          */
-        E connect(int source, int target, @Nullable EP property);
+        E connect(int source, int target, EP property);
 
         /**
          * Int-abstracted version of {@link #setNodeProperty(Object, Object)}.
@@ -167,7 +118,7 @@ public interface MutableGraph<N, E, NP, EP> extends UniversalGraph<N, E, NP, EP>
          * @param property
          *         the property of the node
          */
-        void setNodeProperty(int node, @Nullable NP property);
+        void setNodeProperty(int node, NP property);
 
         /**
          * Int-abstracted version of {@link MutableGraph#setEdgeProperty(Object, Object)}.

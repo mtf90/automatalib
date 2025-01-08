@@ -18,9 +18,8 @@ package net.automatalib.graph.impl;
 import net.automatalib.common.util.array.ArrayStorage;
 import net.automatalib.graph.base.AbstractCompactGraph;
 import net.automatalib.graph.base.CompactEdge;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
-public class CompactGraph<@Nullable NP, @Nullable EP> extends AbstractCompactGraph<CompactEdge<EP>, NP, EP> {
+public class CompactGraph<NP, EP> extends AbstractCompactGraph<CompactEdge<EP>, NP, EP> {
 
     private final ArrayStorage<NP> nodeProperties;
 
@@ -34,7 +33,7 @@ public class CompactGraph<@Nullable NP, @Nullable EP> extends AbstractCompactGra
     }
 
     @Override
-    public void setNodeProperty(int node, @Nullable NP property) {
+    public void setNodeProperty(int node, NP property) {
         nodeProperties.ensureCapacity(node + 1);
         nodeProperties.set(node, property);
     }
@@ -45,7 +44,7 @@ public class CompactGraph<@Nullable NP, @Nullable EP> extends AbstractCompactGra
     }
 
     @Override
-    protected CompactEdge<EP> createEdge(int source, int target, @Nullable EP property) {
+    protected CompactEdge<EP> createEdge(int source, int target, EP property) {
         return new CompactEdge<>(target, property);
     }
 

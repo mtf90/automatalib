@@ -16,9 +16,8 @@
 package net.automatalib.graph.impl;
 
 import net.automatalib.graph.base.AbstractCompactBidiGraph;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
-public class CompactSimpleBidiGraph<@Nullable EP> extends AbstractCompactBidiGraph<Void, EP> {
+public class CompactSimpleBidiGraph<EP> extends AbstractCompactBidiGraph<Void, EP> {
 
     public CompactSimpleBidiGraph() {
         // default constructor
@@ -29,7 +28,7 @@ public class CompactSimpleBidiGraph<@Nullable EP> extends AbstractCompactBidiGra
     }
 
     @Override
-    public void setNodeProperty(int node, @Nullable Void property) {}
+    public void setNodeProperty(int node, Void property) {}
 
     @Override
     public Void getNodeProperty(int node) {

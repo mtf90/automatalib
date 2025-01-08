@@ -115,7 +115,7 @@ public abstract class AbstractCompactDeterministic<I, T, SP, TP> extends Abstrac
     }
 
     @Override
-    public int addIntInitialState(@Nullable SP property) {
+    public int addIntInitialState(SP property) {
         setInitial(addIntState(property), true);
         return this.initial;
     }

@@ -38,11 +38,11 @@ public class SCCTest {
         n2 = graph.addNode();
         n3 = graph.addNode();
 
-        graph.connect(n0, n1);
-        graph.connect(n1, n0);
-        graph.connect(n1, n2);
-        graph.connect(n2, n1);
-        graph.connect(n2, n3);
+        graph.connect(n0, n1, null);
+        graph.connect(n1, n0, null);
+        graph.connect(n1, n2, null);
+        graph.connect(n2, n1, null);
+        graph.connect(n2, n3, null);
 
         Set<Set<Integer>> expectedSCCs = Set.of(Set.of(0, 1, 2), Set.of(3));
 
@@ -63,11 +63,11 @@ public class SCCTest {
         n3 = graph.addNode();
         n4 = graph.addNode();
 
-        graph.connect(n0, n1);
-        graph.connect(n1, n2);
-        graph.connect(n2, n3);
-        graph.connect(n3, n1);
-        graph.connect(n2, n4);
+        graph.connect(n0, n1, null);
+        graph.connect(n1, n2, null);
+        graph.connect(n2, n3, null);
+        graph.connect(n3, n1, null);
+        graph.connect(n2, n4, null);
 
         Set<Set<Integer>> expectedSCCs = Set.of(Set.of(n0), Set.of(n1, n2, n3), Set.of(n4));
 
@@ -94,19 +94,19 @@ public class SCCTest {
         g = graph.addNode();
         h = graph.addNode();
 
-        graph.connect(a, b);
-        graph.connect(b, c);
-        graph.connect(b, f);
-        graph.connect(b, e);
-        graph.connect(c, d);
-        graph.connect(c, g);
-        graph.connect(d, c);
-        graph.connect(d, h);
-        graph.connect(e, a);
-        graph.connect(e, f);
-        graph.connect(f, g);
-        graph.connect(g, f);
-        graph.connect(g, h);
+        graph.connect(a, b, null);
+        graph.connect(b, c, null);
+        graph.connect(b, f, null);
+        graph.connect(b, e, null);
+        graph.connect(c, d, null);
+        graph.connect(c, g, null);
+        graph.connect(d, c, null);
+        graph.connect(d, h, null);
+        graph.connect(e, a, null);
+        graph.connect(e, f, null);
+        graph.connect(f, g, null);
+        graph.connect(g, f, null);
+        graph.connect(g, h, null);
 
         Set<Set<Integer>> expectedSCCs = Set.of(Set.of(a, b, e), Set.of(c, d), Set.of(h), Set.of(f, g));
 
@@ -137,26 +137,26 @@ public class SCCTest {
         k = graph.addNode();
         l = graph.addNode();
 
-        graph.connect(a, c);
-        graph.connect(b, a);
-        graph.connect(c, b);
-        graph.connect(d, b);
-        graph.connect(d, e);
-        graph.connect(e, a);
-        graph.connect(e, f);
-        graph.connect(e, g);
-        graph.connect(f, d);
-        graph.connect(f, k);
-        graph.connect(k, l);
-        graph.connect(l, f);
-        graph.connect(g, d);
-        graph.connect(j, e);
-        graph.connect(j, g);
-        graph.connect(j, j);
-        graph.connect(j, h);
-        graph.connect(h, i);
-        graph.connect(i, h);
-        graph.connect(i, g);
+        graph.connect(a, c, null);
+        graph.connect(b, a, null);
+        graph.connect(c, b, null);
+        graph.connect(d, b, null);
+        graph.connect(d, e, null);
+        graph.connect(e, a, null);
+        graph.connect(e, f, null);
+        graph.connect(e, g, null);
+        graph.connect(f, d, null);
+        graph.connect(f, k, null);
+        graph.connect(k, l, null);
+        graph.connect(l, f, null);
+        graph.connect(g, d, null);
+        graph.connect(j, e, null);
+        graph.connect(j, g, null);
+        graph.connect(j, j, null);
+        graph.connect(j, h, null);
+        graph.connect(h, i, null);
+        graph.connect(i, h, null);
+        graph.connect(i, g, null);
 
         Set<Set<Integer>> expectedSCCs = Set.of(Set.of(a, b, c), Set.of(d, e, f, g, l, k), Set.of(i, h), Set.of(j));
 
@@ -182,26 +182,26 @@ public class SCCTest {
         n8 = graph.addNode();
         n9 = graph.addNode();
 
-        graph.connect(n5, n7);
-        graph.connect(n0, n8);
-        graph.connect(n9, n4);
-        graph.connect(n9, n7);
-        graph.connect(n1, n5);
-        graph.connect(n8, n4);
-        graph.connect(n8, n2);
-        graph.connect(n5, n9);
-        graph.connect(n8, n7);
-        graph.connect(n5, n6);
-        graph.connect(n4, n7);
-        graph.connect(n0, n5);
-        graph.connect(n6, n8);
-        graph.connect(n1, n6);
-        graph.connect(n3, n9);
-        graph.connect(n4, n6);
-        graph.connect(n9, n5);
-        graph.connect(n2, n7);
-        graph.connect(n1, n0);
-        graph.connect(n2, n0);
+        graph.connect(n5, n7, null);
+        graph.connect(n0, n8, null);
+        graph.connect(n9, n4, null);
+        graph.connect(n9, n7, null);
+        graph.connect(n1, n5, null);
+        graph.connect(n8, n4, null);
+        graph.connect(n8, n2, null);
+        graph.connect(n5, n9, null);
+        graph.connect(n8, n7, null);
+        graph.connect(n5, n6, null);
+        graph.connect(n4, n7, null);
+        graph.connect(n0, n5, null);
+        graph.connect(n6, n8, null);
+        graph.connect(n1, n6, null);
+        graph.connect(n3, n9, null);
+        graph.connect(n4, n6, null);
+        graph.connect(n9, n5, null);
+        graph.connect(n2, n7, null);
+        graph.connect(n1, n0, null);
+        graph.connect(n2, n0, null);
 
         Set<Set<Integer>> expectedSCCs = Set.of(Set.of(n3), Set.of(n7), Set.of(n1), Set.of(n0, n2, n4, n5, n6, n8, n9));
 
@@ -238,18 +238,18 @@ public class SCCTest {
         n7 = graph.addNode();
         n8 = graph.addNode();
 
-        graph.connect(n1, n2);
-        graph.connect(n2, n3);
-        graph.connect(n2, n8);
-        graph.connect(n3, n4);
-        graph.connect(n3, n7);
-        graph.connect(n4, n5);
-        graph.connect(n5, n3);
-        graph.connect(n5, n6);
-        graph.connect(n7, n6);
-        graph.connect(n7, n4);
-        graph.connect(n8, n1);
-        graph.connect(n8, n7);
+        graph.connect(n1, n2, null);
+        graph.connect(n2, n3, null);
+        graph.connect(n2, n8, null);
+        graph.connect(n3, n4, null);
+        graph.connect(n3, n7, null);
+        graph.connect(n4, n5, null);
+        graph.connect(n5, n3, null);
+        graph.connect(n5, n6, null);
+        graph.connect(n7, n6, null);
+        graph.connect(n7, n4, null);
+        graph.connect(n8, n1, null);
+        graph.connect(n8, n7, null);
 
         Set<Set<Integer>> expectedSCCs = Set.of(Set.of(n1, n2, n8), Set.of(n6), Set.of(n3, n4, n5, n7));
 

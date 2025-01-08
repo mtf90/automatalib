@@ -20,8 +20,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 /**
  * A mutable automaton. This interface adds support for non-destructive modifications, i.e., adding and modifying states
  * and transitions. If also removal of states and single transitions (from the set of outgoing transitions) should be
@@ -46,15 +44,6 @@ public interface MutableAutomaton<S, I, T, SP, TP> extends UniversalAutomaton<S,
     void clear();
 
     /**
-     * Adds a new state (with an empty property) to the automaton.
-     *
-     * @return the newly created state
-     */
-    default S addState() {
-        return addState(null);
-    }
-
-    /**
      * Adds a new state with the given property to the automaton.
      *
      * @param property
@@ -62,16 +51,7 @@ public interface MutableAutomaton<S, I, T, SP, TP> extends UniversalAutomaton<S,
      *
      * @return the newly created state
      */
-    S addState(@Nullable SP property);
-
-    /**
-     * Adds an initial state (with an empty property) to the automaton.
-     *
-     * @return the newly created state
-     */
-    default S addInitialState() {
-        return addInitialState(null);
-    }
+    S addState(SP property);
 
     /**
      * Adds an initial state with the given property to the automaton.
@@ -81,7 +61,7 @@ public interface MutableAutomaton<S, I, T, SP, TP> extends UniversalAutomaton<S,
      *
      * @return the newly created state
      */
-    default S addInitialState(@Nullable SP property) {
+    default S addInitialState(SP property) {
         S state = addState(property);
         setInitial(state, true);
         return state;

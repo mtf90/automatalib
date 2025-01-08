@@ -141,7 +141,7 @@ public final class HopcroftExtractors {
         MutableDeterministic.FullIntAbstraction<?, SP, TP> resultAbs = result.fullIntAbstraction(inputs);
 
         for (int i = 0; i < numBlocks; i++) {
-            resultAbs.addIntState();
+            resultAbs.addIntState(null);
         }
 
         for (Block curr : hopcroft.blockList()) {

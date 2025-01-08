@@ -76,17 +76,8 @@ public class IntAbstractionTest {
             for (int j = 0; j < size; j++) {
                 if (random.nextBoolean()) { // connect
                     final EP ep = RandomUtil.choose(random, edgeProperties);
-
-                    if (random.nextBoolean()) { // direct EP
-                        final E1 ge = graph.connect(nodeIDs.getNode(i), nodeIDs.getNode(j));
-                        graph.setEdgeProperty(ge, ep);
-
-                        final E2 ae = abstraction.connect(i, j);
-                        abstraction.setEdgeProperty(ae, ep);
-                    } else {
-                        graph.connect(nodeIDs.getNode(i), nodeIDs.getNode(j), ep);
-                        abstraction.connect(i, j, ep);
-                    }
+                    graph.connect(nodeIDs.getNode(i), nodeIDs.getNode(j), ep);
+                    abstraction.connect(i, j, ep);
                 }
             }
         }

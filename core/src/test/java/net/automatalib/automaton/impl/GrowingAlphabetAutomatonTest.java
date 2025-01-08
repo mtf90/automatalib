@@ -82,13 +82,13 @@ public class GrowingAlphabetAutomatonTest {
         return Arrays.asList(m1, m2, m3);
     }
 
-    private <M extends MutableAutomaton<S, Integer, T, SP, TP> & SupportsGrowingAlphabet<Integer>, S, T, SP, TP> void testGrowableAutomatonRegular(
+    private <M extends MutableAutomaton<S, Integer, T, ?, ?> & SupportsGrowingAlphabet<Integer>, S, T> void testGrowableAutomatonRegular(
             final M automaton) {
 
         // add states
-        final S s1 = automaton.addInitialState();
-        final S s2 = automaton.addState();
-        final S s3 = automaton.addState();
+        final S s1 = automaton.addInitialState(null);
+        final S s2 = automaton.addState(null);
+        final S s3 = automaton.addState(null);
 
         // set and test initial transitions
         this.testInitialTransitions(automaton, s1, s2, s3);
@@ -100,13 +100,13 @@ public class GrowingAlphabetAutomatonTest {
         this.testNewTransitions(automaton, s1, s2, s3);
     }
 
-    private <M extends MutableAutomaton<S, Integer, T, SP, TP> & SupportsGrowingAlphabet<Integer>, S, T, SP, TP> void testGrowableAutomatonWithEmptyAlphabetStatesFirst(
+    private <M extends MutableAutomaton<S, Integer, T, ?, ?> & SupportsGrowingAlphabet<Integer>, S, T> void testGrowableAutomatonWithEmptyAlphabetStatesFirst(
             final M automaton) {
 
         // add states
-        final S s1 = automaton.addInitialState();
-        final S s2 = automaton.addState();
-        final S s3 = automaton.addState();
+        final S s1 = automaton.addInitialState(null);
+        final S s2 = automaton.addState(null);
+        final S s3 = automaton.addState(null);
 
         automaton.addAlphabetSymbol(1);
         automaton.addAlphabetSymbol(2);
@@ -121,16 +121,16 @@ public class GrowingAlphabetAutomatonTest {
         this.testNewTransitions(automaton, s1, s2, s3);
     }
 
-    private <M extends MutableAutomaton<S, Integer, T, SP, TP> & SupportsGrowingAlphabet<Integer>, S, T, SP, TP> void testGrowableAutomatonWithEmptyAlphabetSymbolsFirst(
+    private <M extends MutableAutomaton<S, Integer, T, ?, ?> & SupportsGrowingAlphabet<Integer>, S, T> void testGrowableAutomatonWithEmptyAlphabetSymbolsFirst(
             final M automaton) {
 
         automaton.addAlphabetSymbol(1);
         automaton.addAlphabetSymbol(2);
 
         // add states
-        final S s1 = automaton.addInitialState();
-        final S s2 = automaton.addState();
-        final S s3 = automaton.addState();
+        final S s1 = automaton.addInitialState(null);
+        final S s2 = automaton.addState(null);
+        final S s3 = automaton.addState(null);
 
         // set and test initial transitions
         this.testInitialTransitions(automaton, s1, s2, s3);
@@ -154,10 +154,10 @@ public class GrowingAlphabetAutomatonTest {
         automaton.computeOutput(B4);
     }
 
-    private <M extends MutableAutomaton<S, Integer, T, SP, TP>, S, T, SP, TP> void testInitialTransitions(M automaton,
-                                                                                                          S s1,
-                                                                                                          S s2,
-                                                                                                          S s3) {
+    private <M extends MutableAutomaton<S, Integer, T, ?, ?>, S, T> void testInitialTransitions(M automaton,
+                                                                                                S s1,
+                                                                                                S s2,
+                                                                                                S s3) {
         // set initial transitions
         automaton.setTransitions(s1, 1, Collections.singleton(automaton.createTransition(s2, null)));
         automaton.setTransitions(s2, 2, Collections.singleton(automaton.createTransition(s3, null)));
@@ -171,10 +171,10 @@ public class GrowingAlphabetAutomatonTest {
         Assert.assertEquals(automaton.getStates(A4), Collections.singleton(s3));
     }
 
-    private <M extends MutableAutomaton<S, Integer, T, SP, TP>, S, T, SP, TP> void testNewTransitions(M automaton,
-                                                                                                      S s1,
-                                                                                                      S s2,
-                                                                                                      S s3) {
+    private <M extends MutableAutomaton<S, Integer, T, ?, ?>, S, T> void testNewTransitions(M automaton,
+                                                                                            S s1,
+                                                                                            S s2,
+                                                                                            S s3) {
         // set new transitions
         automaton.setTransitions(s1, 3, Collections.singleton(automaton.createTransition(s3, null)));
         automaton.setTransitions(s2, 3, Collections.singleton(automaton.createTransition(s3, null)));

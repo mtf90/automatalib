@@ -108,11 +108,11 @@ public abstract class AbstractCompact<I, T, SP, TP> implements MutableAutomaton<
     }
 
     @Override
-    public final Integer addState(@Nullable SP property) {
+    public final Integer addState(SP property) {
         return addIntState(property);
     }
 
-    public int addIntState(@Nullable SP property) {
+    public int addIntState(SP property) {
         int newState = numStates++;
         ensureCapacity(numStates);
         setStateProperty(newState, property);
@@ -178,7 +178,7 @@ public abstract class AbstractCompact<I, T, SP, TP> implements MutableAutomaton<
         return result;
     }
 
-    public abstract void setStateProperty(int state, @Nullable SP property);
+    public abstract void setStateProperty(int state, SP property);
 
     /**
      * Implementing classes should override this method in order to react to changes to the layout of their array-based
