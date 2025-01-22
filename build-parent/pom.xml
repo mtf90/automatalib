@@ -257,7 +257,7 @@ limitations under the License.
                                                         ^net.automatalib.modelchecker.ltsmin.(Internal.*|Token.*|SimpleCharStream)|\
                                                         ^net.automatalib.modelchecker.m3c.formula.parser.(Internal.*|Token.*|SimpleCharStream)|\
                                         </arg>
-                                        <arg>-AskipUses=^java.(awt.*|util.(Arrays|Map|ArrayDeque)|io.StreamTokenizer)|^javax.swing.*|^net.automatalib.common.util.array.ResizingArrayStorage</arg>
+                                        <arg>-AskipUses=^java.(awt.*|util.(Arrays|Map|ArrayDeque)|io.StreamTokenizer)|^javax.swing.*</arg>
                                         <arg>-AsuppressWarnings=uninitialized</arg>
                                         <arg>-AassumeAssertionsAreEnabled</arg>
                                         <arg>-Astubs=collection-object-parameters-may-be-null.astub</arg>
@@ -301,7 +301,7 @@ limitations under the License.
                                         <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED</arg>
                                         <arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED</arg>
                                         <arg>-AonlyDefs=^net\.automatalib</arg>
-                                        <arg>-AskipUses=.*</arg>
+                                        <arg>-AonlyUses=^net\.automatalib</arg>
                                         <arg>-AsuppressWarnings=uninitialized</arg>
                                         <arg>-AassumeAssertionsAreEnabled</arg>
                                         <arg>-Astubs=collection-object-parameters-may-be-null.astub</arg>
