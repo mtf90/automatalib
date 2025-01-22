@@ -19,7 +19,7 @@ import java.util.function.Function;
 
 import net.automatalib.automaton.AutomatonCreator;
 import net.automatalib.automaton.MutableAutomaton;
-import net.automatalib.automaton.fsa.impl.CompactNFA;
+import net.automatalib.automaton.impl.CompactSimpleAutomaton;
 import net.automatalib.automaton.simple.SimpleAutomaton;
 import net.automatalib.serialization.InputModelDeserializer;
 
@@ -58,7 +58,7 @@ public final class AUTParsers {
     public static <I> InputModelDeserializer<I, SimpleAutomaton<Integer, I>> parser(Function<String, I> inputTransformer) {
         return (InputModelDeserializer<I, SimpleAutomaton<Integer, I>>) (InputModelDeserializer<I, ?>) parser(
                 inputTransformer,
-                new CompactNFA.Creator<>());
+                new CompactSimpleAutomaton.Creator<>());
     }
 
     /**
@@ -71,12 +71,14 @@ public final class AUTParsers {
      *         the creator to construct the concrete automaton instance
      * @param <I>
      *         input symbol type
+     * @param <T>
+     *         transition type
      * @param <A>
      *         (concrete) automaton type
      *
      * @return a {@link InputModelDeserializer} that reads an automaton description
      */
-    public static <I, A extends MutableAutomaton<Integer, I, Integer, ?, ?>> InputModelDeserializer<I, A> parser(
+    public static <I, T, A extends MutableAutomaton<Integer, I, T, Void, Void>> InputModelDeserializer<I, A> parser(
             Function<String, I> inputTransformer,
             AutomatonCreator<A, I> creator) {
         return new InternalAUTParser<>(inputTransformer, creator);

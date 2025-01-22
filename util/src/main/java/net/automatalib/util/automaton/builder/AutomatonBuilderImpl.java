@@ -108,9 +108,13 @@ class AutomatonBuilderImpl<S, I, T, SP, TP, A extends MutableAutomaton<S, ? supe
         if (stateMap.containsKey(stateId)) {
             return stateMap.get(stateId);
         }
-        S state = automaton.addState(null);
+        S state = automaton.addState(getDefaultProperty());
         stateMap.put(stateId, state);
         return state;
+    }
+
+    protected SP getDefaultProperty() {
+        return null;
     }
 
     /**

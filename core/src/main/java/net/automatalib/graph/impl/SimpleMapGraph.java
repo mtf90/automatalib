@@ -26,7 +26,6 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import net.automatalib.graph.MutableGraph;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * A very simple graph realization, where nodes can be arbitrary Java objects. This graph does not support edge

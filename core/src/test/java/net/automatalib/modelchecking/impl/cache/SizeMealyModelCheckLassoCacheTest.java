@@ -44,6 +44,11 @@ public class SizeMealyModelCheckLassoCacheTest<I, O>
         return new CompactMealy<>(Alphabets.fromArray());
     }
 
+    @Override
+    protected void addAutomatonState(MutableMealyMachine<?, I, ?, O> automaton) {
+        automaton.addState();
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     protected MealyLasso<I, O> getCounterexample() {

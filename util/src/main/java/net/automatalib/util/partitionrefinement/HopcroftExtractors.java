@@ -139,16 +139,20 @@ public final class HopcroftExtractors {
 
         A result = creator.createAutomaton(inputs, numBlocks);
         MutableDeterministic.FullIntAbstraction<?, SP, TP> resultAbs = result.fullIntAbstraction(inputs);
+        Block[] blockMap = new Block[numBlocks];
+
+        for (Block curr : hopcroft.blockList()) {
+            blockMap[curr.id] = curr;
+        }
 
         for (int i = 0; i < numBlocks; i++) {
-            resultAbs.addIntState(null);
+            int rep = hopcroft.getRepresentative(blockMap[i]);
+            resultAbs.addIntState(spExtractor.apply(rep));
         }
 
         for (Block curr : hopcroft.blockList()) {
             int blockId = curr.id;
             int rep = hopcroft.getRepresentative(curr);
-            SP sp = spExtractor.apply(rep);
-            resultAbs.setStateProperty(blockId, sp);
 
             for (int i = 0; i < numInputs; i++) {
                 int succ = abs.getSuccessor(rep, i);
