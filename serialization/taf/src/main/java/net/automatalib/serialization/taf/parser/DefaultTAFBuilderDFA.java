@@ -52,4 +52,9 @@ final class DefaultTAFBuilderDFA<A extends MutableDFA<S, String>, S> extends Abs
         return options.remove("accepting") | options.remove("acc");
     }
 
+    @Override
+    protected Boolean getDefaultProperty() {
+        return Boolean.FALSE;
+    }
+
 }

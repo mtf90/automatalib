@@ -32,6 +32,8 @@ import net.automatalib.automaton.transducer.impl.CompactSST;
 import net.automatalib.automaton.transducer.impl.FastMealy;
 import net.automatalib.automaton.transducer.impl.FastMoore;
 import net.automatalib.automaton.transducer.probabilistic.impl.FastProbMealy;
+import net.automatalib.word.Word;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -41,67 +43,68 @@ public class StateLocalInputTest {
 
     @Test
     public void testCompactDFA() {
-        this.testAutomaton(new CompactDFA<>(ALPHABET));
+        this.testAutomaton(new CompactDFA<>(ALPHABET), false);
     }
 
     @Test
     public void testCompactNFA() {
-        this.testAutomaton(new CompactNFA<>(ALPHABET));
+        this.testAutomaton(new CompactNFA<>(ALPHABET), false);
     }
 
     @Test
     public void testFastDFA() {
-        this.testAutomaton(new FastDFA<>(ALPHABET));
+        this.testAutomaton(new FastDFA<>(ALPHABET), false);
     }
 
     @Test
     public void testFastNFA() {
-        this.testAutomaton(new FastNFA<>(ALPHABET));
+        this.testAutomaton(new FastNFA<>(ALPHABET), false);
     }
 
     @Test
     public void testCompactMealy() {
-        this.testAutomaton(new CompactMealy<>(ALPHABET));
+        this.testAutomaton(new CompactMealy<>(ALPHABET), null);
     }
 
     @Test
     public void testFastMealy() {
-        this.testAutomaton(new FastMealy<>(ALPHABET));
+        this.testAutomaton(new FastMealy<>(ALPHABET), null);
     }
 
     @Test
     public void testFastProbMealy() {
-        this.testAutomaton(new FastProbMealy<>(ALPHABET));
+        this.testAutomaton(new FastProbMealy<>(ALPHABET), null);
     }
 
     @Test
     public void testCompactMoore() {
-        this.testAutomaton(new CompactMoore<>(ALPHABET));
+        this.testAutomaton(new CompactMoore<>(ALPHABET), null);
     }
 
     @Test
     public void testFastMoore() {
-        this.testAutomaton(new FastMoore<>(ALPHABET));
+        this.testAutomaton(new FastMoore<>(ALPHABET), null);
     }
 
     @Test
     public void testCompactSST() {
-        this.testAutomaton(new CompactSST<>(ALPHABET));
+        this.testAutomaton(new CompactSST<>(ALPHABET), Word.epsilon());
     }
 
     @Test
     public void testCompactSimpleAutomaton() {
-        this.testAutomaton(new CompactSimpleAutomaton<>(ALPHABET));
+        this.testAutomaton(new CompactSimpleAutomaton<>(ALPHABET), null);
     }
 
-    private <M extends MutableAutomaton<S, Integer, T, SP, TP> & StateLocalInput<S, Integer>, S, T, SP, TP> void testAutomaton(
-            final M automaton) {
+    private <M extends MutableAutomaton<S, Integer, ?, SP, TP> & StateLocalInput<S, Integer>, S, SP, @Nullable TP> void testAutomaton(
+            M automaton,
+            SP property) {
 
         // construct cyclic automaton: symbols increase clock-wise and decrease counter-clock-wise
-        final S s1 = automaton.addInitialState(null);
-        final S s2 = automaton.addState(null);
-        final S s3 = automaton.addState(null);
-        final S s4 = automaton.addState(null);
+        final S s1 = automaton.addInitialState(property);
+        final S s2 = automaton.addState(property);
+        final S s3 = automaton.addState(property);
+        final S s4 = automaton.addState(property);
 
         automaton.addTransition(s1, 1, s2, null);
         automaton.addTransition(s2, 2, s3, null);

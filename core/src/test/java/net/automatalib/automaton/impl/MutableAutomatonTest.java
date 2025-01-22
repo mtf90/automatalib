@@ -47,7 +47,6 @@ import net.automatalib.ts.modal.transition.ModalEdgeProperty.ModalType;
 import net.automatalib.ts.modal.transition.MutableModalEdgeProperty;
 import net.automatalib.ts.modal.transition.impl.ModalEdgePropertyImpl;
 import net.automatalib.word.Word;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -65,58 +64,58 @@ public class MutableAutomatonTest {
                                                                                                                          ModalType.MUST :
                                                                                                                          ModalType.MAY))
                                                                              .collect(Collectors.toList());
-    static final List<Void> EMPTY_PROPS = Collections.emptyList();
+    static final List<Void> VOID_PROPS = Collections.singletonList(null);
     static final List<Word<Character>> SST_TRANS_PROPS = Arrays.asList(Word.fromString("xy"), Word.fromString("yz"));
     static final List<Word<Character>> SST_STATE_PROPS = Arrays.asList(Word.fromString("ab"), Word.fromString("bc"));
 
     @Test
     public void testCompactDFA() {
-        this.checkAutomaton(new CompactDFA.Creator<>(), ALPHABET, STATE_PROPS, EMPTY_PROPS);
+        this.checkAutomaton(new CompactDFA.Creator<>(), ALPHABET, STATE_PROPS, VOID_PROPS);
     }
 
     @Test
     public void testCompactNFA() {
-        this.checkAutomaton(new CompactNFA.Creator<>(), ALPHABET, STATE_PROPS, EMPTY_PROPS);
+        this.checkAutomaton(new CompactNFA.Creator<>(), ALPHABET, STATE_PROPS, VOID_PROPS);
     }
 
     @Test
     public void testFastDFA() {
-        this.checkAutomaton(FastDFA::new, ALPHABET, STATE_PROPS, EMPTY_PROPS);
+        this.checkAutomaton(FastDFA::new, ALPHABET, STATE_PROPS, VOID_PROPS);
     }
 
     @Test
     public void testFastNFA() {
-        this.checkAutomaton(FastNFA::new, ALPHABET, STATE_PROPS, EMPTY_PROPS);
+        this.checkAutomaton(FastNFA::new, ALPHABET, STATE_PROPS, VOID_PROPS);
     }
 
     @Test
     public void testCompactMealy() {
-        this.checkAutomaton(new CompactMealy.Creator<>(), ALPHABET, EMPTY_PROPS, TRANS_PROPS);
+        this.checkAutomaton(new CompactMealy.Creator<>(), ALPHABET, VOID_PROPS, TRANS_PROPS);
     }
 
     @Test
     public void testFastMealy() {
-        this.checkAutomaton(FastMealy::new, ALPHABET, EMPTY_PROPS, TRANS_PROPS);
+        this.checkAutomaton(FastMealy::new, ALPHABET, VOID_PROPS, TRANS_PROPS);
     }
 
     @Test
     public void testFastProbMealy() {
-        this.checkAutomaton(FastProbMealy::new, ALPHABET, EMPTY_PROPS, PROB_TRANS_PROPS);
+        this.checkAutomaton(FastProbMealy::new, ALPHABET, VOID_PROPS, PROB_TRANS_PROPS);
     }
 
     @Test
     public void testCompactMoore() {
-        this.checkAutomaton(new CompactMoore.Creator<>(), ALPHABET, STATE_PROPS, EMPTY_PROPS);
+        this.checkAutomaton(new CompactMoore.Creator<>(), ALPHABET, STATE_PROPS, VOID_PROPS);
     }
 
     @Test
     public void testFastMoore() {
-        this.checkAutomaton(FastMoore::new, ALPHABET, STATE_PROPS, EMPTY_PROPS);
+        this.checkAutomaton(FastMoore::new, ALPHABET, STATE_PROPS, VOID_PROPS);
     }
 
     @Test
     public void testCompactMTS() {
-        this.checkAutomaton(CompactMTS::new, ALPHABET, EMPTY_PROPS, MTS_TRANS_PROPS);
+        this.checkAutomaton(CompactMTS::new, ALPHABET, VOID_PROPS, MTS_TRANS_PROPS);
     }
 
     @Test
@@ -133,7 +132,7 @@ public class MutableAutomatonTest {
                                                                                                  Alphabet<I> alphabet,
                                                                                                  List<SP> stateProps,
                                                                                                  List<? extends TP> transProps) {
-        final M automaton = createInitialAutomaton(creator, alphabet, SIZE);
+        final M automaton = createInitialAutomaton(creator, alphabet, SIZE, stateProps.get(0));
 
         checkEmptyProperties(automaton, alphabet);
         fillRandomly(automaton, alphabet, stateProps, transProps);
@@ -142,17 +141,18 @@ public class MutableAutomatonTest {
         removeSingleTransitionAndCheck(automaton, alphabet);
         removeAllStateTransitionAndCheck(automaton, alphabet);
         removeAllTransitionAndCheck(automaton, alphabet);
-        clearAndCheck(automaton, alphabet);
+        clearAndCheck(automaton, alphabet, stateProps.get(0));
     }
 
-    protected <M extends MutableAutomaton<S, I, T, SP, TP>, S, I, T, SP, TP> M createInitialAutomaton(AutomatonCreator<M, I> creator,
-                                                                                                      Alphabet<I> alphabet,
-                                                                                                      int size) {
+    protected <M extends MutableAutomaton<S, I, ?, SP, ?>, S, I, SP> M createInitialAutomaton(AutomatonCreator<M, I> creator,
+                                                                                              Alphabet<I> alphabet,
+                                                                                              int size,
+                                                                                              SP property) {
 
         final M automaton = creator.createAutomaton(alphabet, size);
 
         for (int i = 0; i < size; i++) {
-            automaton.addState(null);
+            automaton.addState(property);
         }
 
         return automaton;
@@ -179,7 +179,7 @@ public class MutableAutomatonTest {
         }
     }
 
-    private <M extends MutableAutomaton<S, I, T, SP, TP>, S, I, T, SP, TP> void addInitialAndCheck(M automaton,
+    private <M extends MutableAutomaton<S, I, ?, SP, ?>, S, I, SP> void addInitialAndCheck(M automaton,
                                                                                                    List<SP> stateProps) {
         final S tmp = RandomUtil.choose(RANDOM, new ArrayList<>(automaton.getStates()));
         final SP tmpSp = automaton.getStateProperty(tmp);
@@ -295,20 +295,21 @@ public class MutableAutomatonTest {
         checkSignature(oldTpProps, newTpProps, stateIndex * alphabet.size(), alphabet.size());
     }
 
-    private <M extends MutableAutomaton<S, I, T, SP, TP>, S, I, T, @Nullable SP, TP> void clearAndCheck(M automaton,
-                                                                                                        Alphabet<I> alphabet) {
+    private <M extends MutableAutomaton<S, I, T, SP, TP>, S, I, T, SP, TP> void clearAndCheck(M automaton,
+                                                                                                        Alphabet<I> alphabet,
+                                                                                                        SP property) {
         automaton.clear();
 
         Assert.assertTrue(automaton.getStates().isEmpty());
 
         for (int i = 0; i < SIZE; i++) {
-            automaton.addState(null);
+            automaton.addState(property);
         }
 
         checkEmptyProperties(automaton, alphabet);
     }
 
-    private <M extends MutableAutomaton<S, I, T, SP, TP>, S, I, T, @Nullable SP, @Nullable TP> void checkEmptyProperties(
+    private <M extends MutableAutomaton<S, I, T, SP, TP>, S, I, T, SP, TP> void checkEmptyProperties(
             M automaton,
             Alphabet<I> alphabet) {
         for (S s : automaton) {

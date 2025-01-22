@@ -106,6 +106,8 @@ abstract class AbstractTAFBuilder<S, T, SP, TP, M extends MutableDeterministic<S
 
     protected abstract SP getStateProperty(Set<String> options);
 
+    protected abstract SP getDefaultProperty();
+
     protected void warning(String msgFmt, Object... args) {
         parser.warning(msgFmt, args);
     }
@@ -143,7 +145,7 @@ abstract class AbstractTAFBuilder<S, T, SP, TP, M extends MutableDeterministic<S
     }
 
     protected S lookupState(String identifier) {
-        return stateMap.computeIfAbsent(identifier, k -> automaton.addState(null));
+        return stateMap.computeIfAbsent(identifier, k -> automaton.addState(getDefaultProperty()));
     }
 
     protected void doAddWildcardTransitions(String source, String target, TP transProperty) {

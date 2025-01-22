@@ -74,7 +74,7 @@ public abstract class AbstractSizeModelCheckerCacheTest<I, R extends Lasso<I, ?>
 
     @Test(dependsOnMethods = "testCacheHit")
     public void testSizeIncrease() {
-        this.automaton.addState(null);
+        addAutomatonState(this.automaton);
         final Lasso<?, ?> ce = this.cache.findCounterExample(this.automaton, Collections.emptyList(), property);
         Assert.assertSame(ce, counterexample);
         Assert.assertEquals(this.modelCheckerMockUp.getChecks(), 2);
@@ -93,6 +93,8 @@ public abstract class AbstractSizeModelCheckerCacheTest<I, R extends Lasso<I, ?>
     protected abstract C getCache(MC mockup);
 
     protected abstract MA getAutomaton();
+
+    protected abstract void addAutomatonState(MA automaton);
 
     protected abstract R getCounterexample();
 

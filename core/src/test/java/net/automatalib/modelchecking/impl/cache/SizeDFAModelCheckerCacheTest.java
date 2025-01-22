@@ -44,6 +44,11 @@ public class SizeDFAModelCheckerCacheTest<I>
         return new CompactDFA<>(Alphabets.fromArray());
     }
 
+    @Override
+    protected void addAutomatonState(MutableDFA<?, I> automaton) {
+        automaton.addState();
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     protected DFALasso<I> getCounterexample() {

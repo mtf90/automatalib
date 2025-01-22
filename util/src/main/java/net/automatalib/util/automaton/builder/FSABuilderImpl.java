@@ -107,4 +107,9 @@ class FSABuilderImpl<S, I, A extends MutableFSA<S, ? super I>> extends Automaton
             automaton.setAccepting(s, true);
         }
     }
+
+    @Override
+    protected Boolean getDefaultProperty() {
+        return Boolean.FALSE;
+    }
 }

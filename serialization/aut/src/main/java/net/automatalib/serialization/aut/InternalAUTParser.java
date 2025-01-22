@@ -34,8 +34,7 @@ import net.automatalib.exception.FormatException;
 import net.automatalib.serialization.InputModelData;
 import net.automatalib.serialization.InputModelDeserializer;
 
-class InternalAUTParser<I, T, A extends MutableAutomaton<Integer, I, T, ?, ?>>
-        implements InputModelDeserializer<I, A> {
+class InternalAUTParser<I, T, A extends MutableAutomaton<Integer, I, T, ?, ?>> implements InputModelDeserializer<I, A> {
 
     private final Function<String, I> inputTransformer;
     private final AutomatonCreator<A, I> creator;

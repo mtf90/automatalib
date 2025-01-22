@@ -56,19 +56,20 @@ public class MutableStateIntAbstractionTest extends MutableAutomatonTest {
     public void testCompactSimple() {}
 
     @Override
-    protected <M extends MutableAutomaton<S, I, T, SP, TP>, S, I, T, SP, TP> M createInitialAutomaton(AutomatonCreator<M, I> creator,
+    protected <M extends MutableAutomaton<S, I, ?, SP, ?>, S, I, SP> M createInitialAutomaton(AutomatonCreator<M, I> creator,
                                                                                                       Alphabet<I> alphabet,
-                                                                                                      int size) {
+                                                                                                      int size,
+                                                                                                      SP property) {
 
         final M automaton = creator.createAutomaton(alphabet, size);
 
         if (automaton instanceof MutableDeterministic) {
 
             @SuppressWarnings("unchecked")
-            final M result = (M) new MockUp<>((MutableDeterministic<S, I, T, SP, TP>) automaton, alphabet);
+            final M result = (M) new MockUp<>((MutableDeterministic<?, I, ?, ?, ?>) automaton, alphabet);
 
             for (int i = 0; i < size; i++) {
-                result.addState(null);
+                result.addState(property);
             }
 
             return result;

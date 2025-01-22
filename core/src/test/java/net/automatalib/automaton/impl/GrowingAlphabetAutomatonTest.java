@@ -58,9 +58,9 @@ public class GrowingAlphabetAutomatonTest {
     private static final Word<Integer> B4 = Word.fromSymbols(1, 2, 3, 3);
 
     private <M extends MutableAutomaton<S, Integer, T, SP, TP> & SupportsGrowingAlphabet<Integer> & Output<Integer, D>, S, D, T, SP, TP> void testGrowableOutputAutomaton(
-            final Function<Alphabet<Integer>, M> creator) {
+            Function<Alphabet<Integer>, M> creator, SP property) {
 
-        final List<M> automata = testGrowableAutomaton(creator);
+        final List<M> automata = testGrowableAutomaton(creator, property);
 
         for (M m : automata) {
             this.testOutput(m);
@@ -68,27 +68,29 @@ public class GrowingAlphabetAutomatonTest {
     }
 
     private <M extends MutableAutomaton<S, Integer, T, SP, TP> & SupportsGrowingAlphabet<Integer>, S, T, SP, TP> List<M> testGrowableAutomaton(
-            final Function<Alphabet<Integer>, M> creator) {
+            Function<Alphabet<Integer>, M> creator,
+            SP property) {
         final M err = creator.apply(ALPHABET);
         final M m1 = creator.apply(GROWING_ALPHABET);
         final M m2 = creator.apply(EMPTY_GROWING_ALPHABET);
         final M m3 = creator.apply(EMPTY_GROWING_ALPHABET);
 
-        Assert.expectThrows(GrowingAlphabetNotSupportedException.class, () -> testGrowableAutomatonRegular(err));
-        testGrowableAutomatonRegular(m1);
-        testGrowableAutomatonWithEmptyAlphabetStatesFirst(m2);
-        testGrowableAutomatonWithEmptyAlphabetSymbolsFirst(m3);
+        Assert.expectThrows(GrowingAlphabetNotSupportedException.class, () -> testGrowableAutomatonRegular(err, property));
+        testGrowableAutomatonRegular(m1, property);
+        testGrowableAutomatonWithEmptyAlphabetStatesFirst(m2, property);
+        testGrowableAutomatonWithEmptyAlphabetSymbolsFirst(m3, property);
 
         return Arrays.asList(m1, m2, m3);
     }
 
-    private <M extends MutableAutomaton<S, Integer, T, ?, ?> & SupportsGrowingAlphabet<Integer>, S, T> void testGrowableAutomatonRegular(
-            final M automaton) {
+    private <M extends MutableAutomaton<S, Integer, T, SP, ?> & SupportsGrowingAlphabet<Integer>, S, T, SP> void testGrowableAutomatonRegular(
+            M automaton,
+            SP property) {
 
         // add states
-        final S s1 = automaton.addInitialState(null);
-        final S s2 = automaton.addState(null);
-        final S s3 = automaton.addState(null);
+        final S s1 = automaton.addInitialState(property);
+        final S s2 = automaton.addState(property);
+        final S s3 = automaton.addState(property);
 
         // set and test initial transitions
         this.testInitialTransitions(automaton, s1, s2, s3);
@@ -100,13 +102,14 @@ public class GrowingAlphabetAutomatonTest {
         this.testNewTransitions(automaton, s1, s2, s3);
     }
 
-    private <M extends MutableAutomaton<S, Integer, T, ?, ?> & SupportsGrowingAlphabet<Integer>, S, T> void testGrowableAutomatonWithEmptyAlphabetStatesFirst(
-            final M automaton) {
+    private <M extends MutableAutomaton<S, Integer, T, SP, ?> & SupportsGrowingAlphabet<Integer>, S, T, SP> void testGrowableAutomatonWithEmptyAlphabetStatesFirst(
+            M automaton,
+            SP property) {
 
         // add states
-        final S s1 = automaton.addInitialState(null);
-        final S s2 = automaton.addState(null);
-        final S s3 = automaton.addState(null);
+        final S s1 = automaton.addInitialState(property);
+        final S s2 = automaton.addState(property);
+        final S s3 = automaton.addState(property);
 
         automaton.addAlphabetSymbol(1);
         automaton.addAlphabetSymbol(2);
@@ -121,16 +124,17 @@ public class GrowingAlphabetAutomatonTest {
         this.testNewTransitions(automaton, s1, s2, s3);
     }
 
-    private <M extends MutableAutomaton<S, Integer, T, ?, ?> & SupportsGrowingAlphabet<Integer>, S, T> void testGrowableAutomatonWithEmptyAlphabetSymbolsFirst(
-            final M automaton) {
+    private <M extends MutableAutomaton<S, Integer, T, SP, ?> & SupportsGrowingAlphabet<Integer>, S, T, SP> void testGrowableAutomatonWithEmptyAlphabetSymbolsFirst(
+            M automaton,
+            SP property) {
 
         automaton.addAlphabetSymbol(1);
         automaton.addAlphabetSymbol(2);
 
         // add states
-        final S s1 = automaton.addInitialState(null);
-        final S s2 = automaton.addState(null);
-        final S s3 = automaton.addState(null);
+        final S s1 = automaton.addInitialState(property);
+        final S s2 = automaton.addState(property);
+        final S s3 = automaton.addState(property);
 
         // set and test initial transitions
         this.testInitialTransitions(automaton, s1, s2, s3);
@@ -190,51 +194,51 @@ public class GrowingAlphabetAutomatonTest {
 
     @Test
     public void testCompactDFA() {
-        this.testGrowableOutputAutomaton(CompactDFA::new);
+        this.testGrowableOutputAutomaton(CompactDFA::new, false);
     }
 
     @Test
     public void testCompactNFA() {
-        this.testGrowableOutputAutomaton(CompactNFA::new);
+        this.testGrowableOutputAutomaton(CompactNFA::new, false);
     }
 
     @Test
     public void testFastDFA() {
-        this.testGrowableOutputAutomaton(FastDFA::new);
+        this.testGrowableOutputAutomaton(FastDFA::new, false);
     }
 
     @Test
     public void testFastNFA() {
-        this.testGrowableOutputAutomaton(FastNFA::new);
+        this.testGrowableOutputAutomaton(FastNFA::new, false);
     }
 
     @Test
     public void testCompactMealy() {
-        this.testGrowableOutputAutomaton(CompactMealy::new);
+        this.testGrowableOutputAutomaton(CompactMealy::new, null);
     }
 
     @Test
     public void testFastMealy() {
-        this.testGrowableOutputAutomaton(FastMealy::new);
+        this.testGrowableOutputAutomaton(FastMealy::new, null);
     }
 
     @Test
     public void testFastProbMealy() {
-        this.testGrowableAutomaton(FastProbMealy::new);
+        this.testGrowableAutomaton(FastProbMealy::new, null);
     }
 
     @Test
     public void testCompactMoore() {
-        this.testGrowableOutputAutomaton(CompactMoore::new);
+        this.testGrowableOutputAutomaton(CompactMoore::new, null);
     }
 
     @Test
     public void testFastMoore() {
-        this.testGrowableOutputAutomaton(FastMoore::new);
+        this.testGrowableOutputAutomaton(FastMoore::new, null);
     }
 
     @Test
     public void testCompactSST() {
-        this.testGrowableOutputAutomaton(CompactSST::new);
+        this.testGrowableOutputAutomaton(CompactSST::new, Word.epsilon());
     }
 }

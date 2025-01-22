@@ -52,4 +52,9 @@ final class DefaultTAFBuilderMealy<A extends MutableMealyMachine<S, String, T, S
         return null;
     }
 
+    @Override
+    protected Void getDefaultProperty() {
+        return null;
+    }
+
 }
