@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.automatalib.common.smartcollection.IntSeq;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -117,7 +118,7 @@ public abstract class AbstractWordTest {
         Assert.assertEquals(testWord, unchanged);
 
         for (Word<?> other : all) {
-            Word<?> concated = testWord.concat(other, testWord);
+            Word<@Nullable Object> concated = testWord.concat(other, testWord);
             Assert.assertEquals(2 * testWord.length() + other.length(), concated.length());
             Assert.assertEquals(testWord, concated.subWord(0, testWord.length()));
             Assert.assertEquals(other, concated.subWord(testWord.length(), testWord.length() + other.length()));

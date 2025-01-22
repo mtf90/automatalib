@@ -125,7 +125,7 @@ public class MutableAutomatonTest {
 
     @Test
     public void testCompactSimple() {
-        this.checkAutomaton(new CompactSimpleAutomaton.Creator<>(), ALPHABET, EMPTY_PROPS, EMPTY_PROPS);
+        this.checkAutomaton(new CompactSimpleAutomaton.Creator<>(), ALPHABET, VOID_PROPS, VOID_PROPS);
     }
 
     protected <M extends MutableAutomaton<S, I, T, SP, TP>, S, I, T, SP, TP> void checkAutomaton(AutomatonCreator<M, I> creator,
