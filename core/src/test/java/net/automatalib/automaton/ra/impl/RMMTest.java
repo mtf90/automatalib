@@ -142,7 +142,7 @@ public class RMMTest<L, T extends GuardedOutputTransition> {
         // login location
         rmm.addTransition(l2, I_LOGOUT, rmm.createTransition(l1, trueGuard, logoutAssign, O_OK));
 
-        Output<SymbolInstance<InputSymbol>, Word<SymbolInstance<OutputSymbol>>> transducer = rmm.asTransducer(generators);
+        Output<SymbolInstance<InputSymbol>, Word<SymbolInstance<OutputSymbol>>> transducer = rmm.getSemantics(generators);
 
         Word<SymbolInstance<InputSymbol>> input = Word.fromSymbols(new SymbolInstance<>(I_REGISTER, 42, 1),
                                                                    new SymbolInstance<>(I_LOGIN, 42, 1),

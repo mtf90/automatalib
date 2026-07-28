@@ -105,15 +105,15 @@ public abstract class AbstractRMMEquivalenceTest {
         generators.put(ExampleLogin.T_MSG, cookieGenerator);
 
         Assert.assertNotNull(ce);
-        Assert.assertNotEquals(config.right.asTransducer(generators).computeOutput(ce),
-                               config.left.asTransducer(generators).computeOutput(ce),
+        Assert.assertNotEquals(config.right.getSemantics(generators).computeOutput(ce),
+                               config.left.getSemantics(generators).computeOutput(ce),
                                config.toString());
 
         ce = checker.findSeparatingWord(config.left, config.right, config.inputs, solver);
 
         Assert.assertNotNull(ce);
-        Assert.assertNotEquals(config.right.asTransducer(generators).computeOutput(ce),
-                               config.left.asTransducer(generators).computeOutput(ce),
+        Assert.assertNotEquals(config.right.getSemantics(generators).computeOutput(ce),
+                               config.left.getSemantics(generators).computeOutput(ce),
                                config.toString());
     }
 
@@ -167,11 +167,11 @@ public abstract class AbstractRMMEquivalenceTest {
         }
 
         Word<SymbolInstance<InputSymbol>> w = Word.fromLetter(in.instantiate("t1", "t2"));
-        Assert.assertNotEquals(rmm1.asTransducer().computeOutput(w), rmm2.asTransducer().computeOutput(w));
+        Assert.assertNotEquals(rmm1.getSemantics().computeOutput(w), rmm2.getSemantics().computeOutput(w));
 
         Word<SymbolInstance<InputSymbol>> ce = checker.findSeparatingWord(rmm1, rmm2, alphabet, solver);
         Assert.assertNotNull(ce);
-        Assert.assertNotEquals(rmm1.asTransducer().computeOutput(ce), rmm2.asTransducer().computeOutput(ce));
+        Assert.assertNotEquals(rmm1.getSemantics().computeOutput(ce), rmm2.getSemantics().computeOutput(ce));
     }
 
     private static class CookieGenerator implements FreshValueGenerator<String> {

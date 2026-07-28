@@ -19,9 +19,11 @@ package net.automatalib.automaton.ra;
 import java.util.Collection;
 
 import net.automatalib.automaton.concept.RegisterStructure;
+import net.automatalib.automaton.concept.SuffixOutput;
 import net.automatalib.automaton.graph.TransitionEdge;
 import net.automatalib.automaton.graph.TransitionEdge.Property;
 import net.automatalib.graph.UniversalGraph;
+import net.automatalib.semantic.DeterministicSemantics;
 import net.automatalib.symbol.data.ParameterizedSymbol;
 import net.automatalib.symbol.data.SymbolInstance;
 import net.automatalib.ts.acceptor.DeterministicAcceptorTS;
@@ -29,11 +31,20 @@ import net.automatalib.ts.acceptor.DeterministicAcceptorTS;
 /**
  * @author falk
  */
-public interface RegisterAutomaton<L, A extends ParameterizedSymbol, T extends GuardedTransition>
-        extends RegisterStructure<L, A, T, Boolean, Void> {
+public interface RegisterAutomaton<L, A extends ParameterizedSymbol, T extends GuardedTransition> extends
+                                                                                                  RegisterStructure<L, A, T, Boolean, Void>,
+                                                                                                  DeterministicSemantics,
+                                                                                                  SuffixOutput<SymbolInstance<A>, Boolean> {
 
-    default DeterministicAcceptorTS<State<L>, SymbolInstance<A>> asAcceptor() {
+    @Override
+    default DeterministicAcceptorTS<State<L>, SymbolInstance<A>> getSemantics() {
         return new AcceptorView<>(this);
+    }
+
+    @Override
+    default Boolean computeSuffixOutput(Iterable<? extends SymbolInstance<A>> prefix,
+                                        Iterable<? extends SymbolInstance<A>> suffix) {
+        return getSemantics().computeSuffixOutput(prefix, suffix);
     }
 
     @Override

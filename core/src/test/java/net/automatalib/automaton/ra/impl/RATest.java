@@ -106,7 +106,7 @@ public class RATest<L, T extends GuardedTransition> {
         // login location
         ra.addTransition(l2, LOGOUT, ra.createTransition(l1, trueGuard, copyAssign));
 
-        DeterministicAcceptorTS<State<L>, SymbolInstance<InputSymbol>> acceptor = ra.asAcceptor();
+        DeterministicAcceptorTS<State<L>, SymbolInstance<InputSymbol>> acceptor = ra.getSemantics();
 
         Word<SymbolInstance<InputSymbol>> input =
                 Word.fromSymbols(new SymbolInstance<>(REGISTER, 0, 1), new SymbolInstance<>(LOGIN, 0, 1));
@@ -176,7 +176,7 @@ public class RATest<L, T extends GuardedTransition> {
         // login location
         ra.addTransition(l2, LOGOUT, ra.createTransition(l1, trueGuard, copyAssign));
 
-        DeterministicAcceptorTS<State<L>, SymbolInstance<InputSymbol>> acceptor = ra.asAcceptor();
+        DeterministicAcceptorTS<State<L>, SymbolInstance<InputSymbol>> acceptor = ra.getSemantics();
 
         Word<SymbolInstance<InputSymbol>> input = Word.fromLetter(new SymbolInstance<>(LOGIN, 4, 2));
         Assert.assertNotNull(acceptor.getState(input));
@@ -264,7 +264,7 @@ public class RATest<L, T extends GuardedTransition> {
         ra.addTransition(l2, LOGOUT, ra.createTransition(l1, registeredLogoutCondition, copyAssign));
         ra.addTransition(l2, LOGOUT, ra.createTransition(l0, unregisteredLogoutCondition, new Assignment()));
 
-        DeterministicAcceptorTS<State<L>, SymbolInstance<InputSymbol>> acceptor = ra.asAcceptor();
+        DeterministicAcceptorTS<State<L>, SymbolInstance<InputSymbol>> acceptor = ra.getSemantics();
 
         Word<SymbolInstance<InputSymbol>> input = Word.fromSymbols(new SymbolInstance<>(REGISTER_S, "user", "pwd"),
                                                                    new SymbolInstance<>(LOGIN_S, "user", "pwd"));

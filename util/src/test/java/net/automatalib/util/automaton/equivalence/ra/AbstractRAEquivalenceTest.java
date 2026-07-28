@@ -124,15 +124,15 @@ public abstract class AbstractRAEquivalenceTest {
                 checker.findSeparatingWord(config.right, config.left, config.inputs, solver);
 
         Assert.assertNotNull(ce);
-        Assert.assertNotEquals(config.right.asAcceptor().accepts(ce),
-                               config.left.asAcceptor().accepts(ce),
+        Assert.assertNotEquals(config.right.getSemantics().accepts(ce),
+                               config.left.getSemantics().accepts(ce),
                                config.toString());
 
         ce = checker.findSeparatingWord(config.left, config.right, config.inputs, solver);
 
         Assert.assertNotNull(ce);
-        Assert.assertNotEquals(config.right.asAcceptor().accepts(ce),
-                               config.left.asAcceptor().accepts(ce),
+        Assert.assertNotEquals(config.right.getSemantics().accepts(ce),
+                               config.left.getSemantics().accepts(ce),
                                config.toString());
     }
 

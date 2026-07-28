@@ -19,27 +19,27 @@ package net.automatalib.automaton.ra;
 import java.util.Collection;
 
 import net.automatalib.automaton.concept.RegisterStructure;
-import net.automatalib.automaton.concept.SuffixOutput;
 import net.automatalib.automaton.graph.TransitionEdge;
 import net.automatalib.automaton.graph.TransitionEdge.Property;
 import net.automatalib.data.VarMapping.GeneratorMapping;
 import net.automatalib.graph.UniversalGraph;
+import net.automatalib.semantic.DeterministicSemantics;
 import net.automatalib.symbol.data.ParameterizedSymbol;
 import net.automatalib.symbol.data.SymbolInstance;
 import net.automatalib.ts.output.MealyTransitionSystem;
-import net.automatalib.word.Word;
 
 /**
  * @author falk
  */
 public interface RegisterMealyMachine<L, A extends ParameterizedSymbol, T extends GuardedOutputTransition, O extends ParameterizedSymbol>
-        extends RegisterStructure<L, A, T, Void, O> {
+        extends RegisterStructure<L, A, T, Void, O>, DeterministicSemantics {
 
-    default SuffixOutput<SymbolInstance<A>, Word<SymbolInstance<O>>> asTransducer() {
-        return new TransducerView<>(this, new GeneratorMapping());
+    @Override
+    default MealyTransitionSystem<State<L>, SymbolInstance<A>, ?, SymbolInstance<O>> getSemantics() {
+        return getSemantics(new GeneratorMapping());
     }
 
-    default MealyTransitionSystem<State<L>, SymbolInstance<A>, ?, SymbolInstance<O>> asTransducer(GeneratorMapping generators) {
+    default MealyTransitionSystem<State<L>, SymbolInstance<A>, ?, SymbolInstance<O>> getSemantics(GeneratorMapping generators) {
         return new TransducerView<>(this, generators);
     }
 
